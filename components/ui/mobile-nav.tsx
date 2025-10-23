@@ -171,13 +171,13 @@ export default function MobileNav({ currentPage, user, onSignOut, selectedOrg, o
             <Link href="/" className="flex items-center space-x-3" onClick={() => setIsOpen(false)}>
               <Image
                 src="/assets/suede-logo-transparent.png"
-                alt="Suede"
+                alt="Headrest"
                 width={120}
                 height={40}
                 className="h-8 w-auto"
                 priority
               />
-              <span className="text-xl font-bold text-suede-text">Suede</span>
+              <span className="text-xl font-bold text-suede-text">Headrest</span>
             </Link>
             <button
               type="button"

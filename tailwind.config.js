@@ -8,14 +8,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Suede Brand Colors
-        'suede-primary': '#4B8E8E',    // Primary teal/green
+        // Headrest Brand Colors
+        'suede-primary': '#4B8E8E',    // Primary teal/green (keeping class names for compatibility)
         'suede-secondary': '#A6978E',  // Warm grey/beige
         'suede-accent': '#284D4D',     // Dark teal for accents
         'suede-background': '#F2F0ED', // Light warm background
         'suede-text': '#333333',       // Soft black text
-        
-        // Legacy primary colors mapped to Suede
+
+        // Legacy primary colors mapped to Headrest
         primary: {
           50: '#f0f9f9',
           100: '#d1f2f2',

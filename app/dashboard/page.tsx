@@ -163,13 +163,13 @@ export default function DashboardPage() {
               <Link href="/" className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-suede-primary focus:ring-offset-2 rounded">
                 <Image
                   src="/assets/suede-logo-transparent.png"
-                  alt="Suede"
+                  alt="Headrest"
                   width={120}
                   height={40}
                   className="h-8 w-auto"
                   priority
                 />
-                <span className="text-xl font-bold text-suede-text">Suede</span>
+                <span className="text-xl font-bold text-suede-text">Headrest</span>
               </Link>
               <div className="h-6 w-px bg-gray-300"></div>
               <h1 className="text-xl font-semibold text-suede-text">Dashboard</h1>

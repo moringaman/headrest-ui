@@ -7,7 +7,7 @@ import PaymentNotification from '@/components/payment-notification'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Suede - Modern APIs for PrestaShop Stores',
+  title: 'Headrest - Modern APIs for PrestaShop Stores',
   description: 'Transform your PrestaShop store with modern headless commerce APIs and React frontends',
   icons: {
     icon: [

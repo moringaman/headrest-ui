@@ -104,7 +104,7 @@ async function sendWelcomeEmail(email: string, planId: string, isTrial: boolean,
   //     body: JSON.stringify({
   //       from: 'welcome@suede.com',
   //       to: email,
-  //       subject: isTrial ? 'Welcome to Suede - Your 28-day trial has started!' : 'Welcome to Suede!',
+  //       subject: isTrial ? 'Welcome to Headrest - Your 28-day trial has started!' : 'Welcome to Headrest!',
   //       html: generateWelcomeEmailHTML(planId, isTrial, password),
   //     }),
   //   })

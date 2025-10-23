@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Script to create Stripe products and prices for Suede SaaS
+ * Script to create Stripe products and prices for Headrest SaaS
  * Run with: node scripts/create-stripe-products.js
  * 
  * Make sure to set your STRIPE_SECRET_KEY environment variable first:
@@ -19,7 +19,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const plans = [
   {
-    name: 'Suede Hobby - Monthly',
+    name: 'Headrest Hobby - Monthly',
     description: 'Perfect for developers and hobbyists',
     price: 499, // $4.99 in cents
     interval: 'month',
@@ -32,7 +32,7 @@ const plans = [
     ]
   },
   {
-    name: 'Suede Hobby - Annual',
+    name: 'Headrest Hobby - Annual',
     description: 'Perfect for developers and hobbyists (Annual - Save 20%)',
     price: 4790, // $47.90 in cents
     interval: 'year',
@@ -45,7 +45,7 @@ const plans = [
     ]
   },
   {
-    name: 'Suede Starter - Monthly',
+    name: 'Headrest Starter - Monthly',
     description: 'Most popular for growing businesses',
     price: 1900, // $19.00 in cents
     interval: 'month',
@@ -58,7 +58,7 @@ const plans = [
     ]
   },
   {
-    name: 'Suede Starter - Annual',
+    name: 'Headrest Starter - Annual',
     description: 'Most popular for growing businesses (Annual - Save 20%)',
     price: 18240, // $182.40 in cents
     interval: 'year',
@@ -71,7 +71,7 @@ const plans = [
     ]
   },
   {
-    name: 'Suede Professional - Monthly',
+    name: 'Headrest Professional - Monthly',
     description: 'For established businesses',
     price: 7900, // $79.00 in cents
     interval: 'month',
@@ -84,7 +84,7 @@ const plans = [
     ]
   },
   {
-    name: 'Suede Professional - Annual',
+    name: 'Headrest Professional - Annual',
     description: 'For established businesses (Annual - Save 20%)',
     price: 75840, // $758.40 in cents
     interval: 'year',
@@ -97,7 +97,7 @@ const plans = [
     ]
   },
   {
-    name: 'Suede Business - Monthly',
+    name: 'Headrest Business - Monthly',
     description: 'For large enterprises',
     price: 14900, // $149.00 in cents
     interval: 'month',
@@ -110,7 +110,7 @@ const plans = [
     ]
   },
   {
-    name: 'Suede Business - Annual',
+    name: 'Headrest Business - Annual',
     description: 'For large enterprises (Annual - Save 20%)',
     price: 143040, // $1,430.40 in cents
     interval: 'year',
@@ -152,7 +152,7 @@ async function createProducts() {
         },
         metadata: {
           plan_type: plan.name.includes('Annual') ? 'annual' : 'monthly',
-          plan_tier: plan.name.split(' - ')[0].replace('Suede ', '').toLowerCase()
+          plan_tier: plan.name.split(' - ')[0].replace('Headrest ', '').toLowerCase()
         }
       });
       
@@ -177,13 +177,13 @@ async function createProducts() {
   console.log('\n📋 Environment Variables to Add to .env:');
   console.log('# Monthly Plans');
   results.filter(r => r.interval === 'month').forEach(plan => {
-    const envVar = `NEXT_PUBLIC_STRIPE_${plan.name.split(' - ')[0].replace('Suede ', '').toUpperCase()}_MONTHLY_PRICE_ID`;
+    const envVar = `NEXT_PUBLIC_STRIPE_${plan.name.split(' - ')[0].replace('Headrest ', '').toUpperCase()}_MONTHLY_PRICE_ID`;
     console.log(`${envVar}=${plan.priceId}`);
   });
   
   console.log('\n# Annual Plans');
   results.filter(r => r.interval === 'year').forEach(plan => {
-    const envVar = `NEXT_PUBLIC_STRIPE_${plan.name.split(' - ')[0].replace('Suede ', '').toUpperCase()}_ANNUAL_PRICE_ID`;
+    const envVar = `NEXT_PUBLIC_STRIPE_${plan.name.split(' - ')[0].replace('Headrest ', '').toUpperCase()}_ANNUAL_PRICE_ID`;
     console.log(`${envVar}=${plan.priceId}`);
   });
   

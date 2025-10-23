@@ -65,13 +65,13 @@ export default function DocsPage() {
               <Link href="/" className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-suede-primary focus:ring-offset-2 rounded">
                 <Image
                   src="/assets/suede-logo-transparent.png"
-                  alt="Suede"
+                  alt="Headrest"
                   width={120}
                   height={40}
                   className="h-8 w-auto"
                   priority
                 />
-                <span className="text-xl font-bold text-suede-text">Suede</span>
+                <span className="text-xl font-bold text-suede-text">Headrest</span>
               </Link>
               <span className="ml-4 text-sm text-gray-700">Documentation</span>
             </div>
@@ -154,9 +154,9 @@ function OverviewSection() {
       <h1 className="text-3xl font-bold text-suede-text mb-6">API Documentation</h1>
       
       <div className="prose max-w-none">
-        <h2 className="text-2xl font-semibold text-suede-text mb-4">Welcome to Suede API</h2>
+        <h2 className="text-2xl font-semibold text-suede-text mb-4">Welcome to Headrest API</h2>
         <p className="text-suede-text mb-6">
-          Suede provides a powerful REST API for integrating with your PrestaShop stores. 
+          Headrest provides a powerful REST API for integrating with your PrestaShop stores. 
           This documentation will help you get started with API integration, payment processing, and more.
         </p>
 

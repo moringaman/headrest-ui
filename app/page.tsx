@@ -13,13 +13,13 @@ export default function HomePage() {
               <Link href="/" className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-suede-primary focus:ring-offset-2 rounded">
                 <Image
                   src="/assets/suede-logo-transparent.png"
-                  alt="Suede"
+                  alt="Headrest"
                   width={120}
                   height={40}
                   className="h-8 w-auto"
                   priority
                 />
-                <span className="text-xl font-bold text-suede-text">Suede</span>
+                <span className="text-xl font-bold text-suede-text">Headrest</span>
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -49,7 +49,7 @@ export default function HomePage() {
                 <Link 
                   href="/signup" 
                   className="bg-suede-primary text-white px-4 py-2 rounded-md hover:bg-suede-accent focus:outline-none focus:ring-2 focus:ring-suede-primary focus:ring-offset-2 transition-colors"
-                  aria-label="Get started with Suede"
+                  aria-label="Get started with Headrest"
                 >
                   Get Started
                 </Link>
@@ -70,7 +70,7 @@ export default function HomePage() {
         <div className="absolute inset-0 -z-10">
           <Image
             src="/assets/suede-hero-banner.webp"
-            alt="Suede background"
+            alt="Headrest background"
             fill
             className="object-cover object-top"
             priority
@@ -82,7 +82,7 @@ export default function HomePage() {
               <source srcSet="/assets/suede-hero-banner.webp" type="image/webp" />
               <img
                 src="/assets/suede-hero-banner.png"
-                alt="Suede background"
+                alt="Headrest background"
                 className="w-full h-full object-cover object-top"
               />
             </picture>
@@ -98,7 +98,7 @@ export default function HomePage() {
             Stop fighting with PrestaShop's outdated Webservice
           </h1>
           <p className="text-xl text-suede-text mb-8 max-w-4xl mx-auto leading-relaxed">
-            Suede is the modern, lightning-fast, and secure API built specifically to power modern headless commerce storefronts, delivering only the data you need, instantly.
+            Headrest is the modern, lightning-fast, and secure API built specifically to power modern headless commerce storefronts, delivering only the data you need, instantly.
           </p>
           
           {/* CTA Buttons */}
@@ -132,7 +132,7 @@ export default function HomePage() {
       <div className="bg-gradient-to-br from-suede-background to-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-suede-text mb-4">Why Choose Suede?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-suede-text mb-4">Why Choose Headrest?</h2>
             <p className="text-xl text-suede-text max-w-3xl mx-auto">Transform your PrestaShop store with modern technology that delivers exceptional performance and developer experience.</p>
           </div>
           
@@ -277,12 +277,12 @@ export default function HomePage() {
             <div className="flex justify-center items-center space-x-3 mb-4">
               <Image
                 src="/assets/suede-logo-transparent.png"
-                alt="Suede"
+                alt="Headrest"
                 width={120}
                 height={40}
                 className="h-8 w-auto"
               />
-              <span className="text-xl font-bold text-white">Suede</span>
+              <span className="text-xl font-bold text-white">Headrest</span>
             </div>
             <p className="text-suede-background mb-4">Modern APIs for PrestaShop Stores</p>
             <nav className="flex justify-center space-x-6" role="navigation" aria-label="Footer navigation">

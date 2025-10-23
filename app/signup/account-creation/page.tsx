@@ -286,7 +286,7 @@ function AccountCreationForm() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-suede-text mb-2">Welcome to Suede!</h1>
+          <h1 className="text-2xl font-bold text-suede-text mb-2">Welcome to Headrest!</h1>
           <p className="text-suede-text mb-4">
             Your {planId} account has been created successfully.
             {isTrial && ' Your 28-day trial has started!'}
@@ -321,13 +321,13 @@ function AccountCreationForm() {
               <Link href="/" className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-suede-primary focus:ring-offset-2 rounded">
                 <Image
                   src="/assets/suede-logo-transparent.png"
-                  alt="Suede"
+                  alt="Headrest"
                   width={120}
                   height={40}
                   className="h-8 w-auto"
                   priority
                 />
-                <span className="text-xl font-bold text-suede-text">Suede</span>
+                <span className="text-xl font-bold text-suede-text">Headrest</span>
               </Link>
             </div>
             <div className="flex items-center space-x-4">

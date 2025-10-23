@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the complete Stripe-powered tier plan signup flow implemented for the Suede application. The flow allows users to select a subscription plan, process payments through Stripe, and complete onboarding.
+This document outlines the complete Stripe-powered tier plan signup flow implemented for the Headrest application. The flow allows users to select a subscription plan, process payments through Stripe, and complete onboarding.
 
 ## Architecture
 
@@ -65,32 +65,32 @@ NEXT_PUBLIC_STRIPE_BUSINESS_ANNUAL_PRICE_ID=price_...  # Business annual price I
    **Option A: Separate Products (Recommended)**
    
    **Monthly Products:**
-   - Product: "Suede Hobby - Monthly" → Price: $4.99/month (recurring)
-   - Product: "Suede Starter - Monthly" → Price: $19/month (recurring)
-   - Product: "Suede Professional - Monthly" → Price: $79/month (recurring)
-   - Product: "Suede Business - Monthly" → Price: $149/month (recurring)
+   - Product: "Headrest Hobby - Monthly" → Price: $4.99/month (recurring)
+   - Product: "Headrest Starter - Monthly" → Price: $19/month (recurring)
+   - Product: "Headrest Professional - Monthly" → Price: $79/month (recurring)
+   - Product: "Headrest Business - Monthly" → Price: $149/month (recurring)
    
    **Annual Products:**
-   - Product: "Suede Hobby - Annual" → Price: $47.90/year (recurring)
-   - Product: "Suede Starter - Annual" → Price: $182.40/year (recurring)
-   - Product: "Suede Professional - Annual" → Price: $758.40/year (recurring)
-   - Product: "Suede Business - Annual" → Price: $1,430.40/year (recurring)
+   - Product: "Headrest Hobby - Annual" → Price: $47.90/year (recurring)
+   - Product: "Headrest Starter - Annual" → Price: $182.40/year (recurring)
+   - Product: "Headrest Professional - Annual" → Price: $758.40/year (recurring)
+   - Product: "Headrest Business - Annual" → Price: $1,430.40/year (recurring)
 
    **Option B: Single Product with Multiple Prices**
    
-   **Suede Hobby:**
+   **Headrest Hobby:**
    - Monthly Price: $4.99/month (recurring)
    - Annual Price: $47.90/year (recurring)
    
-   **Suede Starter:**
+   **Headrest Starter:**
    - Monthly Price: $19/month (recurring)
    - Annual Price: $182.40/year (recurring)
    
-   **Suede Professional:**
+   **Headrest Professional:**
    - Monthly Price: $79/month (recurring)
    - Annual Price: $758.40/year (recurring)
    
-   **Suede Business:**
+   **Headrest Business:**
    - Monthly Price: $149/month (recurring)
    - Annual Price: $1,430.40/year (recurring)
 
@@ -100,7 +100,7 @@ NEXT_PUBLIC_STRIPE_BUSINESS_ANNUAL_PRICE_ID=price_...  # Business annual price I
    ```
    1. Go to Stripe Dashboard → Products
    2. Click "Add product"
-   3. Product name: "Suede Hobby - Monthly"
+   3. Product name: "Headrest Hobby - Monthly"
    4. Description: "Perfect for developers and hobbyists"
    5. Pricing model: "Recurring"
    6. Price: $4.99
@@ -113,7 +113,7 @@ NEXT_PUBLIC_STRIPE_BUSINESS_ANNUAL_PRICE_ID=price_...  # Business annual price I
    ```
    1. Go to Stripe Dashboard → Products
    2. Click "Add product"
-   3. Product name: "Suede Hobby - Annual"
+   3. Product name: "Headrest Hobby - Annual"
    4. Description: "Perfect for developers and hobbyists (Annual - Save 20%)"
    5. Pricing model: "Recurring"
    6. Price: $47.90

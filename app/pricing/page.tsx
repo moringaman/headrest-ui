@@ -32,13 +32,13 @@ export default function PricingPage() {
               <Link href="/" className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-suede-primary focus:ring-offset-2 rounded">
                 <Image
                   src="/assets/suede-logo-transparent.png"
-                  alt="Suede"
+                  alt="Headrest"
                   width={120}
                   height={40}
                   className="h-8 w-auto"
                   priority
                 />
-                <span className="text-xl font-bold text-suede-text">Suede</span>
+                <span className="text-xl font-bold text-suede-text">Headrest</span>
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -496,12 +496,12 @@ export default function PricingPage() {
             <div className="flex justify-center items-center space-x-3 mb-4">
               <Image
                 src="/assets/suede-logo-transparent.png"
-                alt="Suede"
+                alt="Headrest"
                 width={120}
                 height={40}
                 className="h-8 w-auto"
               />
-              <span className="text-xl font-bold text-white">Suede</span>
+              <span className="text-xl font-bold text-white">Headrest</span>
             </div>
             <p className="text-suede-background mb-4">Modern APIs for PrestaShop Stores</p>
             <div className="flex justify-center space-x-6">
