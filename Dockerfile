@@ -21,6 +21,18 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 
+# Placeholder environment variables for build time
+# These will be overridden at runtime by Railway
+ENV NEXT_PUBLIC_API_URL="https://placeholder.com"
+ENV NEXT_PUBLIC_SUPABASE_URL="https://placeholder.supabase.co"
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY="placeholder"
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_placeholder"
+ENV STRIPE_SECRET_KEY="sk_test_placeholder"
+ENV STRIPE_WEBHOOK_SECRET="whsec_placeholder"
+ENV NEXTAUTH_SECRET="placeholder_secret_min_32_chars_long_1234567890"
+ENV ENCRYPTION_KEY="placeholder_encryption_key_32c"
+ENV SUPABASE_SERVICE_ROLE_KEY="placeholder"
+
 # Build the application
 RUN npm run build
 
