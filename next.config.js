@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typedRoutes: false, // Disable for Cloudflare compatibility
+  output: 'standalone', // For Railway/Docker deployment
 
   // Image optimization - using unoptimized for Cloudflare
   images: {
