@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import MobileNav from '@/components/ui/mobile-nav'
 
-export default function SignupSuccessPage() {
+function SignupSuccessContent() {
   const searchParams = useSearchParams()
   const plan = searchParams.get('plan')
   const [isLoading, setIsLoading] = useState(true)
@@ -206,6 +206,14 @@ export default function SignupSuccessPage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+export default function SignupSuccessPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignupSuccessContent />
+    </Suspense>
   )
 }
 

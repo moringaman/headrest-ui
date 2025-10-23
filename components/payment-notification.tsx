@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
 
-export default function PaymentNotification() {
+function PaymentNotificationContent() {
   const searchParams = useSearchParams()
   const success = searchParams.get('success')
   const canceled = searchParams.get('canceled')
@@ -58,5 +58,13 @@ export default function PaymentNotification() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function PaymentNotification() {
+  return (
+    <Suspense fallback={null}>
+      <PaymentNotificationContent />
+    </Suspense>
   )
 }

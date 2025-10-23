@@ -19,11 +19,13 @@ export default function DocsPage() {
       await signOut()
       addNotification({
         type: 'success',
+        title: 'Signed Out',
         message: 'Signed out successfully'
       })
     } catch (error) {
       addNotification({
         type: 'error',
+        title: 'Error',
         message: 'Failed to sign out'
       })
     }

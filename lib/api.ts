@@ -1,3 +1,5 @@
+import type { Cart, CartItem } from '../types'
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1` : 'http://localhost:3000/api/v1'
 
 export interface Organization {
@@ -175,22 +177,22 @@ export class ApiClient {
   }
 
   // Cart endpoints
-  async createCart(organizationId?: string) {
-    const endpoint = organizationId 
+  async createCart(organizationId?: string): Promise<Cart> {
+    const endpoint = organizationId
       ? `/organizations/${organizationId}/cart`
       : '/cart'
-    return this.request(endpoint, { method: 'POST' })
+    return this.request(endpoint, { method: 'POST' }) as Promise<Cart>
   }
 
-  async getCart(cartId: number, organizationId?: string) {
-    const endpoint = organizationId 
+  async getCart(cartId: number, organizationId?: string): Promise<Cart> {
+    const endpoint = organizationId
       ? `/organizations/${organizationId}/cart/${cartId}`
       : `/cart/${cartId}`
-    return this.request(endpoint)
+    return this.request(endpoint) as Promise<Cart>
   }
 
-  async addToCart(cartId: number, productId: number, quantity: number = 1, organizationId?: string) {
-    const endpoint = organizationId 
+  async addToCart(cartId: number, productId: number, quantity: number = 1, organizationId?: string): Promise<CartItem> {
+    const endpoint = organizationId
       ? `/organizations/${organizationId}/cart/${cartId}/items`
       : `/cart/${cartId}/items`
     return this.request(endpoint, {
@@ -199,36 +201,36 @@ export class ApiClient {
         product_id: productId,
         quantity: quantity
       })
-    })
+    }) as Promise<CartItem>
   }
 
-  async removeFromCart(cartId: number, itemId: number, organizationId?: string) {
-    const endpoint = organizationId 
+  async removeFromCart(cartId: number, itemId: number, organizationId?: string): Promise<void> {
+    const endpoint = organizationId
       ? `/organizations/${organizationId}/cart/${cartId}/items/${itemId}`
       : `/cart/${cartId}/items/${itemId}`
-    return this.request(endpoint, { method: 'DELETE' })
+    return this.request(endpoint, { method: 'DELETE' }) as Promise<void>
   }
 
   // Alias for removeFromCart to match your naming
-  async removeFromBasket(cartId: number, itemId: number, organizationId?: string) {
+  async removeFromBasket(cartId: number, itemId: number, organizationId?: string): Promise<void> {
     return this.removeFromCart(cartId, itemId, organizationId)
   }
 
-  async updateCartItem(cartId: number, itemId: number, quantity: number, organizationId?: string) {
-    const endpoint = organizationId 
+  async updateCartItem(cartId: number, itemId: number, quantity: number, organizationId?: string): Promise<CartItem> {
+    const endpoint = organizationId
       ? `/organizations/${organizationId}/cart/${cartId}/items/${itemId}`
       : `/cart/${cartId}/items/${itemId}`
     return this.request(endpoint, {
       method: 'PUT',
       body: JSON.stringify({ quantity })
-    })
+    }) as Promise<CartItem>
   }
 
-  async clearCart(cartId: number, organizationId?: string) {
-    const endpoint = organizationId 
+  async clearCart(cartId: number, organizationId?: string): Promise<void> {
+    const endpoint = organizationId
       ? `/organizations/${organizationId}/cart/${cartId}/items`
       : `/cart/${cartId}/items`
-    return this.request(endpoint, { method: 'DELETE' })
+    return this.request(endpoint, { method: 'DELETE' }) as Promise<void>
   }
 
 
@@ -409,28 +411,28 @@ export class ApiClient {
   }
 
   // API Key management endpoints
-  async getApiKeys(token?: string) {
+  async getApiKeys(token?: string): Promise<ApiKey[]> {
     const headers: HeadersInit = {}
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
-    return this.request('/api-keys', { headers })
+    return this.request('/api-keys', { headers }) as Promise<ApiKey[]>
   }
 
 
-  async createApiKey(data: CreateApiKeyData, token?: string) {
+  async createApiKey(data: CreateApiKeyData, token?: string): Promise<ApiKey> {
     const headers: HeadersInit = {
       'Content-Type': 'application/json'
     }
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
-    
+
     return this.request('/api-keys', {
       method: 'POST',
       headers,
       body: JSON.stringify(data)
-    })
+    }) as Promise<ApiKey>
   }
 
   async updateApiKey(id: string, data: UpdateApiKeyData, token?: string) {

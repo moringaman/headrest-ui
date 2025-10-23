@@ -40,9 +40,9 @@ export default function ApiKeysPage() {
 
   // Create API key mutation
   const createMutation = useMutation({
-    mutationFn: (data: CreateApiKeyData) => 
+    mutationFn: (data: CreateApiKeyData) =>
       apiClient.createApiKey(data, session?.access_token),
-    onSuccess: (data) => {
+    onSuccess: (data: ApiKey) => {
       queryClient.invalidateQueries({ queryKey: ['api-keys'] })
       setCreatedApiKey(data)
       setIsCreateModalOpen(false)
@@ -1214,7 +1214,7 @@ function CreatedApiKeyModal({
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(apiKey.key)
+      await navigator.clipboard.writeText(apiKey.key || '')
       setCopied(true)
       addNotification({
         type: 'success',

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { useAppStore } from './store'
 import { apiClient } from './api'
 import { Cart, CartItem } from '../types'
@@ -23,12 +24,14 @@ export function useCart(organizationId?: string) {
     queryKey: ['cart', currentCart?.id, organizationId],
     queryFn: () => currentCart ? apiClient.getCart(currentCart.id, organizationId) : null,
     enabled: !!currentCart,
-    onSuccess: (data) => {
-      if (data) {
-        setCartItems(data.items || [])
-      }
-    }
   })
+
+  // React Query v5: Use useEffect instead of onSuccess
+  useEffect(() => {
+    if (cart) {
+      setCartItems(cart.items || [])
+    }
+  }, [cart, setCartItems])
 
   // Create cart mutation
   const createCartMutation = useMutation({

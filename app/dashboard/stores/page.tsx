@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import MobileNav from '@/components/ui/mobile-nav'
@@ -8,17 +8,17 @@ import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/components/providers/auth-provider'
 import { useAppStore } from '@/lib/store'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { 
-  apiClient, 
-  type Organization, 
-  type CreateOrganizationData, 
+import {
+  apiClient,
+  type Organization,
+  type CreateOrganizationData,
   type UpdateOrganizationData,
   type UpdatePrestaShopCredentialsData,
   type UsageStats,
   type Credentials
 } from '@/lib/api'
 
-export default function StoresPage() {
+function StoresContent() {
   const { user, session } = useAuth()
   const { addNotification } = useAppStore()
   const queryClient = useQueryClient()
@@ -1405,5 +1405,13 @@ function UpdateCredentialsModal({
         </div>
       </div>
     </div>
+  )
+}
+
+export default function StoresPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <StoresContent />
+    </Suspense>
   )
 }

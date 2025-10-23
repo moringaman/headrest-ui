@@ -75,7 +75,7 @@ export function decryptData(encryptedData: string | undefined | null): string {
             return decrypted
           }
         } catch (e) {
-          console.log(`AES key ${i + 1} failed:`, e.message)
+          console.log(`AES key ${i + 1} failed:`, e instanceof Error ? e.message : String(e))
         }
       }
       

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -8,7 +8,7 @@ import MobileNav from '@/components/ui/mobile-nav'
 import { usePaymentData, PaymentData } from '@/lib/use-payment-data'
 import { useAuth } from '@/components/providers/auth-provider'
 
-export default function AccountCreationPage() {
+function AccountCreationForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { paymentData, clearPaymentData, hasPaymentData } = usePaymentData()
@@ -230,15 +230,14 @@ export default function AccountCreationPage() {
         setSession({
           access_token: data.access_token,
           user: {
-            id: data.user.id,
-            email: data.user.email,
+            ...data.user,
             user_metadata: {
+              ...data.user.user_metadata,
               firstname: data.organization.name.split("'s")[0], // Extract name from "John Doe's Store"
               lastname: ""
             }
-          },
-          organization: data.organization
-        })
+          }
+        } as any)
         
         // Fetch additional user data from /organizations/me
         try {
@@ -496,5 +495,13 @@ export default function AccountCreationPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AccountCreationPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AccountCreationForm />
+    </Suspense>
   )
 }
