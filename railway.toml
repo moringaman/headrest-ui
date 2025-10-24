@@ -7,3 +7,15 @@ healthcheckPath = "/"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
+
+# Note: Railway automatically passes environment variables as build args
+# Make sure these are set in Railway Dashboard → Variables:
+# - NEXT_PUBLIC_API_URL
+# - NEXT_PUBLIC_SUPABASE_URL
+# - NEXT_PUBLIC_SUPABASE_ANON_KEY
+# - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+# - STRIPE_SECRET_KEY
+# - STRIPE_WEBHOOK_SECRET
+# - NEXTAUTH_SECRET
+# - ENCRYPTION_KEY
+# - SUPABASE_SERVICE_ROLE_KEY
