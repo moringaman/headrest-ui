@@ -13,6 +13,7 @@ import {
   type Organization,
   type CreateOrganizationData,
   type UpdateOrganizationData,
+  type CreatePrestaShopCredentialsData,
   type UpdatePrestaShopCredentialsData,
   type UsageStats,
   type Credentials
@@ -188,11 +189,41 @@ function StoresContent() {
     }
   })
 
-  // Update credentials mutation
+  // Create credentials mutation (POST - for first-time setup or reset)
+  const createCredentialsMutation = useMutation({
+    mutationFn: (credentials: CreatePrestaShopCredentialsData) =>
+      apiClient.createCredentials(credentials, session?.access_token),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['credentials', selectedOrg?.id] })
+      queryClient.invalidateQueries({ queryKey: ['organizations'] })
+      queryClient.invalidateQueries({ queryKey: ['organization', selectedOrg?.id] })
+      setIsCredentialsModalOpen(false)
+      addNotification({
+        type: 'success',
+        title: 'Success',
+        message: 'Database credentials created successfully'
+      })
+    },
+    onError: (error: any) => {
+      const isEncryptionError = error.message?.includes('encryption key') ||
+                               error.message?.includes('decrypt') ||
+                               error.message?.includes('Failed to decrypt')
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: `Failed to create credentials: ${error.message}${
+          isEncryptionError ? '\n\nPlease try resetting your credentials.' : ''
+        }`
+      })
+    }
+  })
+
+  // Update credentials mutation (PATCH - for partial updates)
   const updateCredentialsMutation = useMutation({
-    mutationFn: (credentials: UpdatePrestaShopCredentialsData) => 
+    mutationFn: (credentials: UpdatePrestaShopCredentialsData) =>
       apiClient.updateCredentials(credentials, session?.access_token),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['credentials', selectedOrg?.id] })
       queryClient.invalidateQueries({ queryKey: ['organizations'] })
       queryClient.invalidateQueries({ queryKey: ['organization', selectedOrg?.id] })
       setIsCredentialsModalOpen(false)
@@ -203,10 +234,15 @@ function StoresContent() {
       })
     },
     onError: (error: any) => {
+      const isEncryptionError = error.message?.includes('encryption key') ||
+                               error.message?.includes('decrypt') ||
+                               error.message?.includes('Failed to decrypt')
       addNotification({
         type: 'error',
         title: 'Error',
-        message: `Failed to update credentials: ${error.message}`
+        message: `Failed to update credentials: ${error.message}${
+          isEncryptionError ? '\n\nYour credentials need to be reset. Please create new credentials using the form.' : ''
+        }`
       })
     }
   })
@@ -816,13 +852,21 @@ products = response.json()`}
       )}
 
       {/* Update Credentials Modal */}
-      {isCredentialsModalOpen && credentials && (
+      {isCredentialsModalOpen && (
         <UpdateCredentialsModal
           isOpen={isCredentialsModalOpen}
           onClose={() => setIsCredentialsModalOpen(false)}
-          onSubmit={(credentials) => updateCredentialsMutation.mutate(credentials)}
-          isLoading={updateCredentialsMutation.isPending}
+          onSubmit={(creds) => {
+            // If credentials exist, update (PATCH). If not, create (POST)
+            if (credentials) {
+              updateCredentialsMutation.mutate(creds)
+            } else {
+              createCredentialsMutation.mutate(creds as CreatePrestaShopCredentialsData)
+            }
+          }}
+          isLoading={updateCredentialsMutation.isPending || createCredentialsMutation.isPending}
           credentials={credentials}
+          mode={credentials ? 'update' : 'create'}
         />
       )}
     </div>
@@ -1133,26 +1177,28 @@ function EditStoreModal({
 }
 
 // Update Credentials Modal Component
-function UpdateCredentialsModal({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  isLoading, 
-  credentials 
-}: { 
+function UpdateCredentialsModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  isLoading,
+  credentials,
+  mode = 'update'
+}: {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (credentials: UpdatePrestaShopCredentialsData) => void
+  onSubmit: (credentials: UpdatePrestaShopCredentialsData | CreatePrestaShopCredentialsData) => void
   isLoading: boolean
-  credentials: Credentials
+  credentials?: Credentials
+  mode?: 'create' | 'update'
 }) {
   const [formData, setFormData] = useState<UpdatePrestaShopCredentialsData>({
-    prestashop_db_host: credentials.prestashop_db_host || '',
-    prestashop_db_name: credentials.prestashop_db_name || '',
-    prestashop_db_username: credentials.prestashop_db_username || '',
+    prestashop_db_host: credentials?.prestashop_db_host || '',
+    prestashop_db_name: credentials?.prestashop_db_name || '',
+    prestashop_db_username: credentials?.prestashop_db_username || '',
     prestashop_db_password: '',
-    prestashop_db_port: credentials.prestashop_db_port || 3306,
-    prestashop_db_prefix: credentials.prestashop_db_prefix || 'ps_'
+    prestashop_db_port: credentials?.prestashop_db_port || 3306,
+    prestashop_db_prefix: credentials?.prestashop_db_prefix || 'ps_'
   })
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -1161,28 +1207,28 @@ function UpdateCredentialsModal({
     const newErrors: Record<string, string> = {}
 
     // Host validation
-    if (!formData.prestashop_db_host.trim()) {
+    if (!formData.prestashop_db_host || !formData.prestashop_db_host.trim()) {
       newErrors.prestashop_db_host = 'Database host is required'
     } else if (!/^[a-zA-Z0-9.-]+$/.test(formData.prestashop_db_host)) {
       newErrors.prestashop_db_host = 'Invalid host format'
     }
 
     // Database name validation
-    if (!formData.prestashop_db_name.trim()) {
+    if (!formData.prestashop_db_name || !formData.prestashop_db_name.trim()) {
       newErrors.prestashop_db_name = 'Database name is required'
     } else if (!/^[a-zA-Z0-9_]+$/.test(formData.prestashop_db_name)) {
       newErrors.prestashop_db_name = 'Database name can only contain letters, numbers, and underscores'
     }
 
     // Username validation
-    if (!formData.prestashop_db_username.trim()) {
+    if (!formData.prestashop_db_username || !formData.prestashop_db_username.trim()) {
       newErrors.prestashop_db_username = 'Database username is required'
     } else if (formData.prestashop_db_username.length < 3) {
       newErrors.prestashop_db_username = 'Username must be at least 3 characters'
     }
 
     // Password validation
-    if (!formData.prestashop_db_password.trim()) {
+    if (!formData.prestashop_db_password || !formData.prestashop_db_password.trim()) {
       newErrors.prestashop_db_password = 'Database password is required'
     } else if (formData.prestashop_db_password.length < 6) {
       newErrors.prestashop_db_password = 'Password must be at least 6 characters'
@@ -1194,7 +1240,7 @@ function UpdateCredentialsModal({
     }
 
     // Prefix validation
-    if (!formData.prestashop_db_prefix.trim()) {
+    if (!formData.prestashop_db_prefix || !formData.prestashop_db_prefix.trim()) {
       newErrors.prestashop_db_prefix = 'Table prefix is required'
     } else if (!/^[a-zA-Z0-9_]+$/.test(formData.prestashop_db_prefix)) {
       newErrors.prestashop_db_prefix = 'Prefix can only contain letters, numbers, and underscores'
@@ -1213,11 +1259,20 @@ function UpdateCredentialsModal({
 
   if (!isOpen) return null
 
+  const modalTitle = mode === 'create' ? 'Setup Database Credentials' : 'Update Database Credentials'
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" role="dialog" aria-modal="true" aria-labelledby="credentials-modal-title">
       <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div className="mt-3">
-          <h3 id="credentials-modal-title" className="text-lg font-medium text-gray-900 mb-4">Update Database Credentials</h3>
+          <h3 id="credentials-modal-title" className="text-lg font-medium text-gray-900 mb-4">{modalTitle}</h3>
+          {mode === 'create' && (
+            <div className="mb-4 bg-blue-50 border border-blue-200 rounded-md p-3">
+              <p className="text-sm text-blue-800">
+                Set up your PrestaShop database connection to start using the API.
+              </p>
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
               <label htmlFor="prestashop_db_host" className="block text-sm font-medium text-gray-700">
@@ -1398,7 +1453,10 @@ function UpdateCredentialsModal({
                 disabled={isLoading}
                 className="px-4 py-2 text-sm font-medium text-white bg-suede-primary hover:bg-suede-accent disabled:bg-blue-400 rounded-md"
               >
-                {isLoading ? 'Updating...' : 'Update Credentials'}
+                {isLoading
+                  ? (mode === 'create' ? 'Creating...' : 'Updating...')
+                  : (mode === 'create' ? 'Create Credentials' : 'Update Credentials')
+                }
               </button>
             </div>
           </form>

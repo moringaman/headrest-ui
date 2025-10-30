@@ -35,13 +35,24 @@ export interface UpdateOrganizationData {
   prestashop_url?: string
 }
 
-export interface UpdatePrestaShopCredentialsData {
+export interface CreatePrestaShopCredentialsData {
   prestashop_db_host: string
+  prestashop_db_port?: number
   prestashop_db_name: string
   prestashop_db_username: string
   prestashop_db_password: string
-  prestashop_db_port: number
-  prestashop_db_prefix: string
+  prestashop_db_prefix?: string
+  prestashop_url?: string
+}
+
+export interface UpdatePrestaShopCredentialsData {
+  prestashop_db_host?: string
+  prestashop_db_port?: number
+  prestashop_db_name?: string
+  prestashop_db_username?: string
+  prestashop_db_password?: string
+  prestashop_db_prefix?: string
+  prestashop_url?: string
 }
 
 export interface UsageStats {
@@ -312,12 +323,24 @@ export class ApiClient {
     })
   }
 
-  async updateCredentials(credentials: UpdatePrestaShopCredentialsData, token?: string) {
+  async createCredentials(credentials: CreatePrestaShopCredentialsData, token?: string): Promise<Organization> {
     const headers: HeadersInit = {}
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
-    return this.request('/organizations/me/credentials', {
+    return this.request<Organization>('/organizations/me/credentials', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(credentials)
+    })
+  }
+
+  async updateCredentials(credentials: UpdatePrestaShopCredentialsData, token?: string): Promise<Organization> {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request<Organization>('/organizations/me/credentials', {
       method: 'PATCH',
       headers,
       body: JSON.stringify(credentials)
