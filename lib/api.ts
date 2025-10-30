@@ -143,17 +143,37 @@ export class ApiClient {
 
     if (!response.ok) {
       const errorBody = await response.text()
-      // console.error('API Error:', { 
+      // console.error('API Error:', {
       //   url,
-      //   status: response.status, 
-      //   statusText: response.statusText, 
+      //   status: response.status,
+      //   statusText: response.statusText,
       //   body: errorBody,
       //   headers: finalHeaders
       // })
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
     }
 
-    return response.json()
+    // Handle empty responses (204 No Content, or other empty responses)
+    const contentType = response.headers.get('content-type')
+    const contentLength = response.headers.get('content-length')
+
+    // Check if response is empty (common for DELETE operations)
+    if (
+      response.status === 204 ||
+      contentLength === '0' ||
+      !contentType?.includes('application/json')
+    ) {
+      return undefined as T
+    }
+
+    // Read response as text first to handle empty bodies gracefully
+    const text = await response.text()
+    if (!text || text.trim() === '') {
+      return undefined as T
+    }
+
+    // Parse JSON only if there's actual content
+    return JSON.parse(text) as T
   }
 
   // Product endpoints
