@@ -551,25 +551,25 @@ export class ApiClient {
   }
 
   // Firebase Auth Configuration endpoints
-  async updateFirebaseAuthConfig(data: UpdateFirebaseAuthConfigData, token?: string): Promise<Organization> {
+  async updateFirebaseAuthConfig(organizationId: string, data: UpdateFirebaseAuthConfigData, token?: string): Promise<Organization> {
     const headers: HeadersInit = {}
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
-    return this.request<Organization>('/organizations/me/firebase-auth', {
+    return this.request<Organization>(`/organizations/${organizationId}/auth/firebase/config`, {
       method: 'PATCH',
       headers,
       body: JSON.stringify(data)
     })
   }
 
-  async getFirebaseAuthConfig(token?: string): Promise<FirebaseAuthConfig | null> {
+  async getFirebaseAuthConfig(organizationId: string, token?: string): Promise<FirebaseAuthConfig | null> {
     const headers: HeadersInit = {}
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
     try {
-      return await this.request<FirebaseAuthConfig>('/organizations/me/firebase-auth', { headers })
+      return await this.request<FirebaseAuthConfig>(`/organizations/${organizationId}/auth/firebase/config`, { headers })
     } catch (error: any) {
       // If no config exists, return null
       if (error.message?.includes('404') || error.message?.includes('Not Found')) {
@@ -579,12 +579,12 @@ export class ApiClient {
     }
   }
 
-  async deleteFirebaseAuthConfig(token?: string): Promise<void> {
+  async deleteFirebaseAuthConfig(organizationId: string, token?: string): Promise<void> {
     const headers: HeadersInit = {}
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
-    return this.request('/organizations/me/firebase-auth', {
+    return this.request(`/organizations/${organizationId}/auth/firebase/config`, {
       method: 'DELETE',
       headers
     })

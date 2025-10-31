@@ -168,7 +168,10 @@ export default function AuthSettingsPage() {
   // Update mutation
   const updateConfigMutation = useMutation({
     mutationFn: async (data: UpdateFirebaseAuthConfigData) => {
-      return apiClient.updateFirebaseAuthConfig(data, session?.access_token)
+      if (!organization?.id) {
+        throw new Error('No organization selected')
+      }
+      return apiClient.updateFirebaseAuthConfig(organization.id, data, session?.access_token)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['current-organization'] })
@@ -191,7 +194,10 @@ export default function AuthSettingsPage() {
   // Delete mutation
   const deleteConfigMutation = useMutation({
     mutationFn: async () => {
-      return apiClient.deleteFirebaseAuthConfig(session?.access_token)
+      if (!organization?.id) {
+        throw new Error('No organization selected')
+      }
+      return apiClient.deleteFirebaseAuthConfig(organization.id, session?.access_token)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['current-organization'] })
