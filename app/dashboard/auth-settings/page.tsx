@@ -173,16 +173,16 @@ export default function AuthSettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['current-organization'] })
       addNotification({
-        id: Date.now().toString(),
         type: 'success',
+        title: 'Configuration Updated',
         message: 'Firebase authentication configuration updated successfully'
       })
       setIsDirty(false)
     },
     onError: (error: any) => {
       addNotification({
-        id: Date.now().toString(),
         type: 'error',
+        title: 'Update Failed',
         message: error.message || 'Failed to update Firebase configuration'
       })
     }
@@ -202,15 +202,15 @@ export default function AuthSettingsPage() {
       setFileName('')
       setConfigStatus('none')
       addNotification({
-        id: Date.now().toString(),
         type: 'success',
+        title: 'Configuration Removed',
         message: 'Firebase authentication configuration removed'
       })
     },
     onError: (error: any) => {
       addNotification({
-        id: Date.now().toString(),
         type: 'error',
+        title: 'Removal Failed',
         message: error.message || 'Failed to remove Firebase configuration'
       })
     }
