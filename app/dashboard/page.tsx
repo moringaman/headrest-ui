@@ -155,8 +155,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-800">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center space-x-4">
@@ -169,10 +169,10 @@ export default function DashboardPage() {
                   className="h-8 w-auto"
                   priority
                 />
-                <span className="text-xl font-bold text-suede-text">Headrest</span>
+                <span className="text-xl font-bold text-white">Headrest</span>
               </Link>
-              <div className="h-6 w-px bg-gray-300"></div>
-              <h1 className="text-xl font-semibold text-suede-text">Dashboard</h1>
+              <div className="h-6 w-px bg-gray-700"></div>
+              <h1 className="text-xl font-semibold text-white">Dashboard</h1>
             </div>
                 <div className="flex items-center space-x-4">
                   {/* Desktop navigation - hidden on mobile */}
@@ -190,12 +190,18 @@ export default function DashboardPage() {
                       API Keys
                     </Link>
                     <Link
+                      href="/dashboard/auth-settings"
+                      className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                    >
+                      Auth Settings
+                    </Link>
+                    <Link
                       href="/docs"
                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                     >
                       Documentation
                     </Link>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-400">
                       Welcome, {user?.email}
                     </span>
                     <button
@@ -220,31 +226,31 @@ export default function DashboardPage() {
       </div>
 
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0 bg-gray-50 rounded-lg p-6">
+        <div className="px-4 py-6 sm:px-0 rounded-lg p-6">
 
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Quick Stats Overview */}
                 <div className="lg:col-span-3">
-                  <div className="bg-white shadow rounded-lg">
+                  <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
                     <div className="px-4 py-5 sm:p-6">
-                      <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                      <h3 className="text-lg leading-6 font-medium text-white mb-4">
                         Overview
                       </h3>
-                
+
                   {organizationsLoading && (
                     <div className="text-center py-8">
-                      <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                      <p className="mt-2 text-gray-600">Loading your data...</p>
+                      <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
+                      <p className="mt-2 text-gray-400">Loading your data...</p>
                     </div>
                   )}
 
                   {!organizationsLoading && organizations.length === 0 && (
                     <div className="text-center py-8">
-                      <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="mx-auto h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
                       </svg>
-                      <h3 className="mt-2 text-sm font-medium text-gray-900">No stores connected</h3>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <h3 className="mt-2 text-sm font-medium text-white">No stores connected</h3>
+                      <p className="mt-1 text-sm text-gray-400">
                         Get started by connecting your first PrestaShop store.
                       </p>
                       <div className="mt-6">
@@ -260,49 +266,49 @@ export default function DashboardPage() {
 
                   {!organizationsLoading && organizations.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                         <div className="flex items-center">
                           <div className="flex-shrink-0">
-                            <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="h-8 w-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                           </div>
                           <div className="ml-4">
-                            <p className="text-sm font-medium text-blue-600">Total Stores</p>
-                            <p className="text-2xl font-semibold text-blue-900">{organizations.length}</p>
+                            <p className="text-sm font-medium text-blue-400">Total Stores</p>
+                            <p className="text-2xl font-semibold text-blue-300">{organizations.length}</p>
                           </div>
                         </div>
                       </div>
 
-                          <div className={`rounded-lg p-4 ${
-                            getApiCallsColor() === 'purple' ? 'bg-purple-50' :
-                            getApiCallsColor() === 'green' ? 'bg-green-50' :
-                            getApiCallsColor() === 'amber' ? 'bg-amber-50' :
-                            'bg-red-50'
+                          <div className={`rounded-lg p-4 border ${
+                            getApiCallsColor() === 'purple' ? 'bg-purple-500/10 border-purple-500/20' :
+                            getApiCallsColor() === 'green' ? 'bg-green-500/10 border-green-500/20' :
+                            getApiCallsColor() === 'amber' ? 'bg-amber-500/10 border-amber-500/20' :
+                            'bg-red-500/10 border-red-500/20'
                           }`}>
                         <div className="flex items-center">
                           <div className="flex-shrink-0">
                             <svg className={`h-8 w-8 ${
-                              getApiCallsColor() === 'purple' ? 'text-purple-600' :
-                              getApiCallsColor() === 'green' ? 'text-green-600' :
-                              getApiCallsColor() === 'amber' ? 'text-amber-600' :
-                              'text-red-600'
+                              getApiCallsColor() === 'purple' ? 'text-purple-400' :
+                              getApiCallsColor() === 'green' ? 'text-green-400' :
+                              getApiCallsColor() === 'amber' ? 'text-amber-400' :
+                              'text-red-400'
                             }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                             </svg>
                           </div>
                           <div className="ml-4">
                             <p className={`text-sm font-medium ${
-                              getApiCallsColor() === 'purple' ? 'text-purple-600' :
-                              getApiCallsColor() === 'green' ? 'text-green-600' :
-                              getApiCallsColor() === 'amber' ? 'text-amber-600' :
-                              'text-red-600'
+                              getApiCallsColor() === 'purple' ? 'text-purple-400' :
+                              getApiCallsColor() === 'green' ? 'text-green-400' :
+                              getApiCallsColor() === 'amber' ? 'text-amber-400' :
+                              'text-red-400'
                             }`}>API Calls Used</p>
                             <p className={`text-2xl font-semibold ${
-                              getApiCallsColor() === 'purple' ? 'text-purple-900' :
-                              getApiCallsColor() === 'green' ? 'text-green-900' :
-                              getApiCallsColor() === 'amber' ? 'text-amber-900' :
-                              'text-red-900'
+                              getApiCallsColor() === 'purple' ? 'text-purple-300' :
+                              getApiCallsColor() === 'green' ? 'text-green-300' :
+                              getApiCallsColor() === 'amber' ? 'text-amber-300' :
+                              'text-red-300'
                             }`}>
                               {usageStats ? usageStats.total_calls.toLocaleString() : '0'}
                             </p>
@@ -310,32 +316,32 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                          <div className="bg-purple-50 rounded-lg p-4">
+                          <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
                         <div className="flex items-center">
                           <div className="flex-shrink-0">
-                            <svg className="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="h-8 w-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                           </div>
                           <div className="ml-4">
-                            <p className="text-sm font-medium text-purple-600">Plan Tier</p>
-                            <p className="text-2xl font-semibold text-purple-900 capitalize">
+                            <p className="text-sm font-medium text-purple-400">Plan Tier</p>
+                            <p className="text-2xl font-semibold text-purple-300 capitalize">
                               {organizations[0]?.plan_tier || 'N/A'}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                          <div className="bg-green-50 rounded-lg p-4">
+                          <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
                         <div className="flex items-center">
                           <div className="flex-shrink-0">
-                            <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="h-8 w-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
                             </svg>
                           </div>
                           <div className="ml-4">
-                            <p className="text-sm font-medium text-green-600">Connected Stores</p>
-                            <p className="text-2xl font-semibold text-green-900">
+                            <p className="text-sm font-medium text-green-400">Connected Stores</p>
+                            <p className="text-2xl font-semibold text-green-300">
                               {Object.values(connectionStatuses).filter(status => status === 'connected').length}
                             </p>
                           </div>
@@ -348,13 +354,13 @@ export default function DashboardPage() {
                   {!organizationsLoading && organizations.length > 0 && (
                     <div className="mt-8 space-y-6">
                       {/* Top Endpoints */}
-                      <div className="bg-white rounded-lg">
+                      <div className="bg-gray-800/30 border border-gray-700 rounded-lg">
                         <div className="px-4 py-5 sm:p-6">
                           <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg leading-6 font-medium text-gray-900">
+                            <h3 className="text-lg leading-6 font-medium text-white">
                               Top API Endpoints
                             </h3>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-400">
                               Most frequently used
                             </div>
                           </div>
@@ -363,13 +369,13 @@ export default function DashboardPage() {
                       </div>
 
                       {/* Usage Trends */}
-                      <div className="bg-white rounded-lg">
+                      <div className="bg-gray-800/30 border border-gray-700 rounded-lg">
                         <div className="py-5 sm:p-6">
                           <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg leading-6 font-medium text-gray-900">
+                            <h3 className="text-lg leading-6 font-medium text-white">
                               API Usage Trends
                             </h3>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-400">
                               Last 30 days
                             </div>
                           </div>
@@ -385,9 +391,9 @@ export default function DashboardPage() {
                 {/* Quick Actions & Store List */}
                 <div className="lg:col-span-1 space-y-6">
               {/* Quick Actions */}
-              <div className="bg-white shadow rounded-lg">
+              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
                 <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                  <h3 className="text-lg leading-6 font-medium text-white mb-4">
                     Quick Actions
                   </h3>
                   <div className="space-y-3">
@@ -408,21 +414,21 @@ export default function DashboardPage() {
               </div>
 
               {/* Store List */}
-              <div className="bg-white shadow rounded-lg">
+              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
                 <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                  <h3 className="text-lg leading-6 font-medium text-white mb-4">
                     Your Stores
                   </h3>
-                  
+
                   {organizationsLoading && (
                     <div className="text-center py-4">
-                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
                     </div>
                   )}
 
                   {!organizationsLoading && organizations.length === 0 && (
                     <div className="text-center py-4">
-                      <p className="text-sm text-gray-500">No stores connected</p>
+                      <p className="text-sm text-gray-400">No stores connected</p>
                     </div>
                   )}
 
@@ -431,21 +437,21 @@ export default function DashboardPage() {
                       {organizations.slice(0, 3).map((org: Organization) => (
                         <div
                           key={org.id}
-                          className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+                          className="flex items-center justify-between p-3 border border-gray-700 rounded-lg hover:bg-gray-800/30 transition-colors"
                         >
                           <div className="flex-1">
-                            <h4 className="text-sm font-medium text-gray-900">{org.name}</h4>
-                            <p className="text-xs text-gray-500 capitalize">{org.plan_tier}</p>
+                            <h4 className="text-sm font-medium text-white">{org.name}</h4>
+                            <p className="text-xs text-gray-400 capitalize">{org.plan_tier}</p>
                           </div>
                           <div className="flex items-center space-x-2">
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              connectionStatuses[org.id] === 'connected' 
-                                ? 'bg-green-100 text-green-800' 
+                              connectionStatuses[org.id] === 'connected'
+                                ? 'bg-green-500/10 border border-green-500/20 text-green-400'
                                 : connectionStatuses[org.id] === 'disconnected'
-                                ? 'bg-red-100 text-red-800'
+                                ? 'bg-red-500/10 border border-red-500/20 text-red-400'
                                 : connectionStatuses[org.id] === 'testing'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-gray-100 text-gray-800'
+                                ? 'bg-yellow-500/10 border border-yellow-500/20 text-yellow-400'
+                                : 'bg-gray-500/10 border border-gray-500/20 text-gray-400'
                             }`}>
                               {connectionStatuses[org.id] === 'connected' ? '✓' :
                                connectionStatuses[org.id] === 'disconnected' ? '✗' :
@@ -454,12 +460,12 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       ))}
-                      
+
                       {organizations.length > 3 && (
                         <div className="text-center pt-2">
                           <Link
                             href="/dashboard/stores"
-                            className="text-sm text-blue-600 hover:text-blue-800"
+                            className="text-sm text-blue-400 hover:text-blue-300"
                           >
                             View all {organizations.length} stores →
                           </Link>
@@ -472,15 +478,15 @@ export default function DashboardPage() {
 
               {/* Current Plan Tier */}
               {organizations.length > 0 && (
-                <div className="bg-white shadow rounded-lg">
+                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
                   <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    <h3 className="text-lg leading-6 font-medium text-white mb-4">
                       Current Plan
                     </h3>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-gray-600">Plan Tier</p>
-                        <p className="text-lg font-semibold text-gray-900 capitalize">
+                        <p className="text-sm text-gray-300">Plan Tier</p>
+                        <p className="text-lg font-semibold text-white capitalize">
                           {organizations[0]?.plan_tier || 'N/A'}
                         </p>
                       </div>

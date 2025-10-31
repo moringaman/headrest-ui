@@ -275,9 +275,9 @@ function StoresContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Navigation */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center space-x-4">
@@ -290,10 +290,10 @@ function StoresContent() {
                   className="h-8 w-auto"
                   priority
                 />
-                <span className="text-xl font-bold text-suede-text">Headrest</span>
+                <span className="text-xl font-bold text-white">Headrest</span>
               </Link>
-              <div className="h-6 w-px bg-gray-300"></div>
-              <h1 className="text-xl font-semibold text-suede-text">Store Connections</h1>
+              <div className="h-6 w-px bg-gray-700"></div>
+              <h1 className="text-xl font-semibold text-white">Store Connections</h1>
             </div>
             <div className="flex items-center space-x-4">
               {/* Desktop navigation - hidden on mobile */}
@@ -309,6 +309,12 @@ function StoresContent() {
                   className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                 >
                   API Keys
+                </Link>
+                <Link
+                  href="/dashboard/auth-settings"
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                >
+                  Auth Settings
                 </Link>
                 <Link
                   href="/docs"
@@ -340,32 +346,32 @@ function StoresContent() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Organizations List */}
             <div className="lg:col-span-1">
-              <div className="bg-white shadow rounded-lg">
+              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
                 <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                  <h3 className="text-lg leading-6 font-medium text-white mb-4">
                     Your Stores
                   </h3>
-                  
+
                   {organizationsLoading && (
                     <div className="text-center py-8">
-                      <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                      <p className="mt-2 text-gray-600">Loading stores...</p>
+                      <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
+                      <p className="mt-2 text-gray-400">Loading stores...</p>
                     </div>
                   )}
 
                   {organizationsError && (
-                    <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-                      <p className="text-red-800">Error loading stores: {organizationsError.message}</p>
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-md p-4 mb-4">
+                      <p className="text-red-400">Error loading stores: {organizationsError.message}</p>
                     </div>
                   )}
 
                   {!organizationsLoading && !organizationsError && organizations.length === 0 && (
                     <div className="text-center py-8">
-                      <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="mx-auto h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
                       </svg>
-                      <h3 className="mt-2 text-sm font-medium text-gray-900">No stores connected</h3>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <h3 className="mt-2 text-sm font-medium text-white">No stores connected</h3>
+                      <p className="mt-1 text-sm text-gray-400">
                         Connect your first PrestaShop store to get started.
                       </p>
                     </div>
@@ -378,18 +384,18 @@ function StoresContent() {
                           key={org.id}
                           className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                             selectedOrg?.id === org.id
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300'
+                              ? 'border-blue-500 bg-blue-500/10'
+                              : 'border-gray-700 hover:border-gray-600 bg-gray-800/30'
                           }`}
                           onClick={() => setSelectedOrg(org)}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <h4 className="text-sm font-medium text-gray-900">{org.name}</h4>
-                              <p className="text-xs text-gray-500">{org.slug}</p>
+                              <h4 className="text-sm font-medium text-white">{org.name}</h4>
+                              <p className="text-xs text-gray-400">{org.slug}</p>
                             </div>
                             <div className="flex items-center space-x-1">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/10 border border-green-500/20 text-green-400">
                                 Active
                               </span>
                             </div>
@@ -407,10 +413,10 @@ function StoresContent() {
               {selectedOrg ? (
                 <div className="space-y-6">
                   {/* Connection Details */}
-                  <div className="bg-white shadow rounded-lg">
+                  <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
                     <div className="px-4 py-5 sm:p-6">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">
+                        <h3 className="text-lg leading-6 font-medium text-white">
                           {selectedOrg.name}
                         </h3>
                         <div className="flex items-center space-x-2">
@@ -437,48 +443,48 @@ function StoresContent() {
 
                       {detailsLoading ? (
                         <div className="text-center py-4">
-                          <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
-                          <p className="mt-2 text-gray-600">Loading details...</p>
+                          <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
+                          <p className="mt-2 text-gray-400">Loading details...</p>
                         </div>
                       ) : (
                         <div className="space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Organization Name</label>
-                          <p className="mt-1 text-sm text-gray-900">{selectedOrg.name}</p>
+                          <label className="block text-sm font-medium text-gray-300">Organization Name</label>
+                          <p className="mt-1 text-sm text-white">{selectedOrg.name}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Slug</label>
-                          <p className="mt-1 text-sm text-gray-900">{selectedOrg.slug}</p>
+                          <label className="block text-sm font-medium text-gray-300">Slug</label>
+                          <p className="mt-1 text-sm text-white">{selectedOrg.slug}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Plan Tier</label>
-                          <p className="mt-1 text-sm text-gray-900">{selectedOrg.plan_tier}</p>
+                          <label className="block text-sm font-medium text-gray-300">Plan Tier</label>
+                          <p className="mt-1 text-sm text-white">{selectedOrg.plan_tier}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Status</label>
-                          <p className="mt-1 text-sm text-gray-900">{selectedOrg.is_active ? 'Active' : 'Inactive'}</p>
+                          <label className="block text-sm font-medium text-gray-300">Status</label>
+                          <p className="mt-1 text-sm text-white">{selectedOrg.is_active ? 'Active' : 'Inactive'}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">API Calls Used</label>
-                          <p className="mt-1 text-sm text-gray-900">{selectedOrg.api_calls_used.toLocaleString()}</p>
+                          <label className="block text-sm font-medium text-gray-300">API Calls Used</label>
+                          <p className="mt-1 text-sm text-white">{selectedOrg.api_calls_used.toLocaleString()}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">API Calls Limit</label>
-                          <p className="mt-1 text-sm text-gray-900">{selectedOrg.api_calls_limit.toLocaleString()}</p>
+                          <label className="block text-sm font-medium text-gray-300">API Calls Limit</label>
+                          <p className="mt-1 text-sm text-white">{selectedOrg.api_calls_limit.toLocaleString()}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Created</label>
-                          <p className="mt-1 text-sm text-gray-900">
+                          <label className="block text-sm font-medium text-gray-300">Created</label>
+                          <p className="mt-1 text-sm text-white">
                             {new Date(selectedOrg.created_at).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
 
                       {/* PrestaShop URL Configuration */}
-                      <div className="border-t pt-6 mt-4">
+                      <div className="border-t border-gray-700 pt-6 mt-4">
                         <div className="flex items-center justify-between mb-4">
-                          <h4 className="text-lg font-medium text-gray-900">PrestaShop URL</h4>
+                          <h4 className="text-lg font-medium text-white">PrestaShop URL</h4>
                           <button
                             onClick={() => setIsEditModalOpen(true)}
                             className="bg-suede-primary hover:bg-suede-accent text-white px-3 py-1 rounded-md text-sm font-medium"
@@ -489,9 +495,9 @@ function StoresContent() {
                         {(organizationDetails?.prestashop_url || selectedOrg.prestashop_url) ? (
                           <div className="space-y-3">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Current PrestaShop URL</label>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Current PrestaShop URL</label>
                               <div className="flex items-center space-x-2">
-                                <code className="flex-1 bg-gray-100 px-3 py-2 rounded-md text-sm font-mono text-gray-900 break-all">
+                                <code className="flex-1 bg-gray-900/50 border border-gray-600 px-3 py-2 rounded-md text-sm font-mono text-white break-all">
                                   {organizationDetails?.prestashop_url || selectedOrg.prestashop_url}
                                 </code>
                                 <button
@@ -510,7 +516,7 @@ function StoresContent() {
                                 </button>
                               </div>
                             </div>
-                            <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                            <div className="bg-green-500/10 border border-green-500/20 rounded-md p-4">
                               <div className="flex">
                                 <div className="flex-shrink-0">
                                   <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
@@ -518,10 +524,10 @@ function StoresContent() {
                                   </svg>
                                 </div>
                                 <div className="ml-3">
-                                  <h3 className="text-sm font-medium text-green-800">
+                                  <h3 className="text-sm font-medium text-green-400">
                                     Images Enabled
                                   </h3>
-                                  <div className="mt-2 text-sm text-green-700">
+                                  <div className="mt-2 text-sm text-green-300">
                                     <p>Product images will be returned by the API using this URL as the base.</p>
                                   </div>
                                 </div>
@@ -529,7 +535,7 @@ function StoresContent() {
                             </div>
                           </div>
                         ) : (
-                          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-4">
                             <div className="flex">
                               <div className="flex-shrink-0">
                                 <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
@@ -537,10 +543,10 @@ function StoresContent() {
                                 </svg>
                               </div>
                               <div className="ml-3">
-                                <h3 className="text-sm font-medium text-yellow-800">
+                                <h3 className="text-sm font-medium text-yellow-400">
                                   PrestaShop URL Not Configured
                                 </h3>
-                                <div className="mt-2 text-sm text-yellow-700">
+                                <div className="mt-2 text-sm text-yellow-300">
                                   <p>Configure your PrestaShop URL to enable product images in API responses.</p>
                                 </div>
                               </div>
@@ -551,9 +557,9 @@ function StoresContent() {
 
                       {/* Database Connection Details (if available) */}
                       {credentials ? (
-                        <div className="border-t pt-6 mt-4">
+                        <div className="border-t border-gray-700 pt-6 mt-4">
                           <div className="flex items-center justify-between mb-4">
-                            <h4 className="text-lg font-medium text-gray-900">Database Connection</h4>
+                            <h4 className="text-lg font-medium text-white">Database Connection</h4>
                             <button
                               onClick={() => testConnectionMutation.mutate()}
                               disabled={testConnectionMutation.isPending}
@@ -577,42 +583,42 @@ function StoresContent() {
                               )}
                             </button>
                           </div>
-                          
-                          <div className="bg-gray-50 rounded-lg p-4">
+
+                          <div className="bg-gray-800/30 border border-gray-700 rounded-lg p-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                               <div className="space-y-1">
-                                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide">Database Host</label>
-                                <p className="text-sm font-mono text-gray-900 bg-white px-2 py-1 rounded border">{credentials.prestashop_db_host}</p>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide">Database Host</label>
+                                <p className="text-sm font-mono text-white bg-gray-900/50 border border-gray-600 px-2 py-1 rounded">{credentials.prestashop_db_host}</p>
                               </div>
                               <div className="space-y-1">
-                                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide">Database Name</label>
-                                <p className="text-sm font-mono text-gray-900 bg-white px-2 py-1 rounded border">{credentials.prestashop_db_name}</p>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide">Database Name</label>
+                                <p className="text-sm font-mono text-white bg-gray-900/50 border border-gray-600 px-2 py-1 rounded">{credentials.prestashop_db_name}</p>
                               </div>
                               <div className="space-y-1">
-                                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide">Database User</label>
-                                <p className="text-sm font-mono text-gray-900 bg-white px-2 py-1 rounded border">{credentials.prestashop_db_username}</p>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide">Database User</label>
+                                <p className="text-sm font-mono text-white bg-gray-900/50 border border-gray-600 px-2 py-1 rounded">{credentials.prestashop_db_username}</p>
                               </div>
                               <div className="space-y-1">
-                                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide">Port</label>
-                                <p className="text-sm font-mono text-gray-900 bg-white px-2 py-1 rounded border">{credentials.prestashop_db_port}</p>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide">Port</label>
+                                <p className="text-sm font-mono text-white bg-gray-900/50 border border-gray-600 px-2 py-1 rounded">{credentials.prestashop_db_port}</p>
                               </div>
                               <div className="space-y-1">
-                                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide">Table Prefix</label>
-                                <p className="text-sm font-mono text-gray-900 bg-white px-2 py-1 rounded border">{credentials.prestashop_db_prefix}</p>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide">Table Prefix</label>
+                                <p className="text-sm font-mono text-white bg-gray-900/50 border border-gray-600 px-2 py-1 rounded">{credentials.prestashop_db_prefix}</p>
                               </div>
                               <div className="space-y-1">
-                                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide">Status</label>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide">Status</label>
                                 <div className="flex items-center">
                                   <div className={`w-2 h-2 rounded-full mr-2 ${
-                                    connectionStatuses[selectedOrg.id] === 'connected' 
-                                      ? 'bg-green-400' 
+                                    connectionStatuses[selectedOrg.id] === 'connected'
+                                      ? 'bg-green-400'
                                       : connectionStatuses[selectedOrg.id] === 'disconnected'
                                       ? 'bg-red-400'
                                       : connectionStatuses[selectedOrg.id] === 'testing'
                                       ? 'bg-yellow-400'
                                       : 'bg-gray-400'
                                   }`}></div>
-                                  <span className="text-sm text-gray-900">
+                                  <span className="text-sm text-white">
                                     {connectionStatuses[selectedOrg.id] === 'connected' ? 'Connected' :
                                      connectionStatuses[selectedOrg.id] === 'disconnected' ? 'Disconnected' :
                                      connectionStatuses[selectedOrg.id] === 'testing' ? 'Testing...' : 'Unknown'}
@@ -626,14 +632,14 @@ function StoresContent() {
 
                       {/* Connection Strings */}
                       {credentials && (
-                        <div className="border-t pt-6 mt-4">
-                          <h4 className="text-lg font-medium text-gray-900 mb-4">Connection Strings</h4>
+                        <div className="border-t border-gray-700 pt-6 mt-4">
+                          <h4 className="text-lg font-medium text-white mb-4">Connection Strings</h4>
                           <div className="space-y-4">
                             {/* Database Connection String */}
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Database Connection String</label>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Database Connection String</label>
                               <div className="flex items-center space-x-2">
-                                <code className="flex-1 bg-gray-100 px-3 py-2 rounded-md text-sm font-mono text-gray-900 break-all">
+                                <code className="flex-1 bg-gray-900/50 border border-gray-600 px-3 py-2 rounded-md text-sm font-mono text-white break-all">
                                   mysql://{credentials.prestashop_db_username}:{credentials.prestashop_db_password ? '•••••••• (password)' : ''}@{credentials.prestashop_db_host}:{credentials.prestashop_db_port}/{credentials.prestashop_db_name}
                                 </code>
                                 <button
@@ -655,9 +661,9 @@ function StoresContent() {
 
                             {/* API Base URL */}
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">API Base URL</label>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">API Base URL</label>
                               <div className="flex items-center space-x-2">
-                                <code className="flex-1 bg-gray-100 px-3 py-2 rounded-md text-sm font-mono text-gray-900 break-all">
+                                <code className="flex-1 bg-gray-900/50 border border-gray-600 px-3 py-2 rounded-md text-sm font-mono text-white break-all">
                                   {process.env.NEXT_PUBLIC_API_URL || 'https://prestashop-api-staging.up.railway.app'}/api/v1
                                 </code>
                                 <button
@@ -679,28 +685,28 @@ function StoresContent() {
 
                             {/* Available API Routes */}
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Available API Routes</label>
-                              <div className="bg-gray-50 rounded-lg p-4">
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Available API Routes</label>
+                              <div className="bg-gray-800/30 border border-gray-700 rounded-lg p-4">
                                 <div className="space-y-2 text-sm">
                                   <div className="flex items-center justify-between">
-                                    <code className="font-mono text-gray-900">GET /organizations/{selectedOrg?.id}/products</code>
-                                    <span className="text-gray-500 text-xs">Fetch products</span>
+                                    <code className="font-mono text-white">GET /organizations/{selectedOrg?.id}/products</code>
+                                    <span className="text-gray-400 text-xs">Fetch products</span>
                                   </div>
                                   <div className="flex items-center justify-between">
-                                    <code className="font-mono text-gray-900">GET /organizations/{selectedOrg?.id}/categories</code>
-                                    <span className="text-gray-500 text-xs">Fetch categories</span>
+                                    <code className="font-mono text-white">GET /organizations/{selectedOrg?.id}/categories</code>
+                                    <span className="text-gray-400 text-xs">Fetch categories</span>
                                   </div>
                                   <div className="flex items-center justify-between">
-                                    <code className="font-mono text-gray-900">GET /organizations/{selectedOrg?.id}/customers</code>
-                                    <span className="text-gray-500 text-xs">Fetch customers</span>
+                                    <code className="font-mono text-white">GET /organizations/{selectedOrg?.id}/customers</code>
+                                    <span className="text-gray-400 text-xs">Fetch customers</span>
                                   </div>
                                   <div className="flex items-center justify-between">
-                                    <code className="font-mono text-gray-900">GET /organizations/{selectedOrg?.id}/orders</code>
-                                    <span className="text-gray-500 text-xs">Fetch orders</span>
+                                    <code className="font-mono text-white">GET /organizations/{selectedOrg?.id}/orders</code>
+                                    <span className="text-gray-400 text-xs">Fetch orders</span>
                                   </div>
                                   <div className="flex items-center justify-between">
-                                    <code className="font-mono text-gray-900">GET /organizations/{selectedOrg?.id}/products/&#123;id&#125;</code>
-                                    <span className="text-gray-500 text-xs">Get single product</span>
+                                    <code className="font-mono text-white">GET /organizations/{selectedOrg?.id}/products/&#123;id&#125;</code>
+                                    <span className="text-gray-400 text-xs">Get single product</span>
                                   </div>
                                 </div>
                               </div>
@@ -708,10 +714,10 @@ function StoresContent() {
 
                             {/* Code Examples */}
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Quick Start Examples</label>
-                              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Quick Start Examples</label>
+                              <div className="bg-gray-800/30 border border-gray-700 rounded-lg p-4 space-y-3">
                                 <div>
-                                  <h5 className="text-sm font-medium text-gray-900 mb-1">JavaScript/Node.js</h5>
+                                  <h5 className="text-sm font-medium text-white mb-1">JavaScript/Node.js</h5>
                                   <pre className="bg-gray-900 text-green-400 p-3 rounded text-xs overflow-x-auto">
 {`const baseUrl = '${process.env.NEXT_PUBLIC_API_URL || 'https://prestashop-api-staging.up.railway.app'}/api/v1';
 const response = await fetch(\`\${baseUrl}/organizations/${selectedOrg?.id}/products\`, {
@@ -724,7 +730,7 @@ const products = await response.json();`}
                                   </pre>
                                 </div>
                                 <div>
-                                  <h5 className="text-sm font-medium text-gray-900 mb-1">Python</h5>
+                                  <h5 className="text-sm font-medium text-white mb-1">Python</h5>
                                   <pre className="bg-gray-900 text-green-400 p-3 rounded text-xs overflow-x-auto">
 {`import requests
 
@@ -737,7 +743,7 @@ products = response.json()`}
                                   </pre>
                                 </div>
                                 <div>
-                                  <h5 className="text-sm font-medium text-gray-900 mb-1">cURL</h5>
+                                  <h5 className="text-sm font-medium text-white mb-1">cURL</h5>
                                   <pre className="bg-gray-900 text-green-400 p-3 rounded text-xs overflow-x-auto">
 {`curl -X GET \\
   '${process.env.NEXT_PUBLIC_API_URL || 'https://prestashop-api-staging.up.railway.app'}/api/v1/organizations/${selectedOrg?.id}/products' \\
@@ -752,9 +758,9 @@ products = response.json()`}
                       )}
 
                       {!credentials && (
-                        <div className="border-t pt-4 mt-4">
-                          <h4 className="text-md font-medium text-gray-900 mb-3">Database Connection</h4>
-                          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                        <div className="border-t border-gray-700 pt-4 mt-4">
+                          <h4 className="text-md font-medium text-white mb-3">Database Connection</h4>
+                          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-4">
                             <div className="flex">
                               <div className="flex-shrink-0">
                                 <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
@@ -762,10 +768,10 @@ products = response.json()`}
                                 </svg>
                               </div>
                               <div className="ml-3">
-                                <h3 className="text-sm font-medium text-yellow-800">
+                                <h3 className="text-sm font-medium text-yellow-400">
                                   No Database Connection Configured
                                 </h3>
-                                <div className="mt-2 text-sm text-yellow-700">
+                                <div className="mt-2 text-sm text-yellow-300">
                                   <p>This organization doesn't have a PrestaShop database connection configured yet.</p>
                                   <p className="mt-1">Click "Update Credentials" to set up the database connection.</p>
                                 </div>
@@ -781,27 +787,27 @@ products = response.json()`}
 
                   {/* Usage Statistics */}
                   {usageStats && (
-                    <div className="bg-white shadow rounded-lg">
+                    <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
                       <div className="px-4 py-5 sm:p-6">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                        <h3 className="text-lg leading-6 font-medium text-white mb-4">
                           Usage Statistics
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-600">{usageStats.total_calls.toLocaleString()}</div>
-                            <div className="text-sm text-gray-500">API Calls Used</div>
+                            <div className="text-2xl font-bold text-blue-400">{usageStats.total_calls.toLocaleString()}</div>
+                            <div className="text-sm text-gray-400">API Calls Used</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-2xl font-bold text-green-600">{usageStats.calls_remaining.toLocaleString()}</div>
-                            <div className="text-sm text-gray-500">Remaining</div>
+                            <div className="text-2xl font-bold text-green-400">{usageStats.calls_remaining.toLocaleString()}</div>
+                            <div className="text-sm text-gray-400">Remaining</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-2xl font-bold text-purple-600">{usageStats.calls_limit.toLocaleString()}</div>
-                            <div className="text-sm text-gray-500">Total Limit</div>
+                            <div className="text-2xl font-bold text-purple-400">{usageStats.calls_limit.toLocaleString()}</div>
+                            <div className="text-sm text-gray-400">Total Limit</div>
                           </div>
                         </div>
                         <div className="mt-4 text-center">
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-gray-400">
                             Period: {new Date(usageStats.period_start).toLocaleDateString()} - {new Date(usageStats.period_end).toLocaleDateString()}
                           </div>
                         </div>
@@ -810,14 +816,14 @@ products = response.json()`}
                   )}
                 </div>
               ) : (
-                <div className="bg-white shadow rounded-lg">
+                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
                   <div className="px-4 py-5 sm:p-6">
                     <div className="text-center py-8">
-                      <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="mx-auto h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
                       </svg>
-                      <h3 className="mt-2 text-sm font-medium text-gray-900">Select a store</h3>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <h3 className="mt-2 text-sm font-medium text-white">Select a store</h3>
+                      <p className="mt-1 text-sm text-gray-400">
                         Choose a store from the list to view its details and manage its connection.
                       </p>
                     </div>
@@ -900,29 +906,29 @@ function CreateStoreModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
+      <div className="relative top-20 mx-auto p-5 border border-gray-700 w-96 shadow-xl rounded-md bg-gray-800">
         <div className="mt-3">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Connect New Store</h3>
+          <h3 className="text-lg font-medium text-white mb-4">Connect New Store</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Organization Name</label>
+              <label className="block text-sm font-medium text-gray-300">Organization Name</label>
               <input
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="My Organization"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Slug (optional)</label>
+              <label className="block text-sm font-medium text-gray-300">Slug (optional)</label>
               <input
                 type="text"
                 value={formData.slug || ''}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="my-organization"
               />
             </div>
@@ -932,9 +938,9 @@ function CreateStoreModal({
                 onClick={onClose}
                 disabled={!canClose}
                 className={`px-4 py-2 text-sm font-medium rounded-md ${
-                  canClose 
-                    ? 'text-gray-700 bg-gray-100 hover:bg-gray-200' 
-                    : 'text-gray-400 bg-gray-50 cursor-not-allowed'
+                  canClose
+                    ? 'text-gray-300 bg-gray-700 hover:bg-gray-600'
+                    : 'text-gray-500 bg-gray-800 cursor-not-allowed'
                 }`}
               >
                 Cancel
@@ -1058,10 +1064,10 @@ function EditStoreModal({
   if (!isOpen) return null
 
   return (
-    <div 
-      className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" 
-      role="dialog" 
-      aria-modal="true" 
+    <div
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm overflow-y-auto h-full w-full z-50"
+      role="dialog"
+      aria-modal="true"
       aria-labelledby="edit-modal-title"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
@@ -1069,12 +1075,12 @@ function EditStoreModal({
         }
       }}
     >
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div className="relative top-20 mx-auto p-5 border border-gray-700 w-96 shadow-xl rounded-md bg-gray-800">
         <div className="mt-3">
-          <h3 id="edit-modal-title" className="text-lg font-medium text-gray-900 mb-4">Edit Organization</h3>
+          <h3 id="edit-modal-title" className="text-lg font-medium text-white mb-4">Edit Organization</h3>
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <label htmlFor="edit-name" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="edit-name" className="block text-sm font-medium text-gray-300">
                 Organization Name *
               </label>
               <input
@@ -1084,20 +1090,20 @@ function EditStoreModal({
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                  errors.name ? 'border-red-300' : 'border-gray-300'
+                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.name ? 'border-red-500' : 'border-gray-600'
                 }`}
                 aria-describedby={errors.name ? 'edit-name-error' : undefined}
                 aria-invalid={!!errors.name}
               />
               {errors.name && (
-                <p id="edit-name-error" className="mt-1 text-sm text-red-600" role="alert">
+                <p id="edit-name-error" className="mt-1 text-sm text-red-400" role="alert">
                   {errors.name}
                 </p>
               )}
             </div>
             <div>
-              <label htmlFor="edit-slug" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="edit-slug" className="block text-sm font-medium text-gray-300">
                 Slug
               </label>
               <input
@@ -1106,8 +1112,8 @@ function EditStoreModal({
                 type="text"
                 value={formData.slug || ''}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                  errors.slug ? 'border-red-300' : 'border-gray-300'
+                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.slug ? 'border-red-500' : 'border-gray-600'
                 }`}
                 placeholder="my-organization"
                 aria-describedby={errors.slug ? 'edit-slug-error' : 'edit-slug-help'}
@@ -1117,16 +1123,16 @@ function EditStoreModal({
                 title="URL-friendly identifier (lowercase letters, numbers, hyphens only)"
               />
               {errors.slug && (
-                <p id="edit-slug-error" className="mt-1 text-sm text-red-600" role="alert">
+                <p id="edit-slug-error" className="mt-1 text-sm text-red-400" role="alert">
                   {errors.slug}
                 </p>
               )}
-              <p id="edit-slug-help" className="mt-1 text-xs text-gray-500">
+              <p id="edit-slug-help" className="mt-1 text-xs text-gray-400">
                 Optional: URL-friendly identifier (2-50 characters, lowercase letters, numbers, hyphens only)
               </p>
             </div>
             <div>
-              <label htmlFor="edit-prestashop-url" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="edit-prestashop-url" className="block text-sm font-medium text-gray-300">
                 PrestaShop URL
               </label>
               <input
@@ -1136,18 +1142,18 @@ function EditStoreModal({
                 value={formData.prestashop_url || ''}
                 onChange={(e) => setFormData({ ...formData, prestashop_url: e.target.value })}
                 placeholder="https://your-store.com"
-                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                  errors.prestashop_url ? 'border-red-300' : 'border-gray-300'
+                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.prestashop_url ? 'border-red-500' : 'border-gray-600'
                 }`}
                 aria-describedby={errors.prestashop_url ? 'edit-prestashop-url-error' : 'edit-prestashop-url-help'}
                 aria-invalid={!!errors.prestashop_url}
               />
               {errors.prestashop_url && (
-                <p id="edit-prestashop-url-error" className="mt-1 text-sm text-red-600" role="alert">
+                <p id="edit-prestashop-url-error" className="mt-1 text-sm text-red-400" role="alert">
                   {errors.prestashop_url}
                 </p>
               )}
-              <p id="edit-prestashop-url-help" className="mt-1 text-xs text-gray-500">
+              <p id="edit-prestashop-url-help" className="mt-1 text-xs text-gray-400">
                 The base URL of your PrestaShop store (e.g., https://wildmansherbs.co.uk)
               </p>
             </div>
@@ -1155,7 +1161,7 @@ function EditStoreModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-md transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-md transition-colors"
                 aria-label="Cancel editing organization"
               >
                 Cancel
@@ -1262,20 +1268,20 @@ function UpdateCredentialsModal({
   const modalTitle = mode === 'create' ? 'Setup Database Credentials' : 'Update Database Credentials'
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" role="dialog" aria-modal="true" aria-labelledby="credentials-modal-title">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm overflow-y-auto h-full w-full z-50" role="dialog" aria-modal="true" aria-labelledby="credentials-modal-title">
+      <div className="relative top-20 mx-auto p-5 border border-gray-700 w-96 shadow-xl rounded-md bg-gray-800">
         <div className="mt-3">
-          <h3 id="credentials-modal-title" className="text-lg font-medium text-gray-900 mb-4">{modalTitle}</h3>
+          <h3 id="credentials-modal-title" className="text-lg font-medium text-white mb-4">{modalTitle}</h3>
           {mode === 'create' && (
-            <div className="mb-4 bg-blue-50 border border-blue-200 rounded-md p-3">
-              <p className="text-sm text-blue-800">
+            <div className="mb-4 bg-blue-500/10 border border-blue-500/20 rounded-md p-3">
+              <p className="text-sm text-blue-300">
                 Set up your PrestaShop database connection to start using the API.
               </p>
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <label htmlFor="prestashop_db_host" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="prestashop_db_host" className="block text-sm font-medium text-gray-300">
                 Database Host *
               </label>
               <input
@@ -1285,21 +1291,21 @@ function UpdateCredentialsModal({
                 required
                 value={formData.prestashop_db_host}
                 onChange={(e) => setFormData({ ...formData, prestashop_db_host: e.target.value })}
-                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                  errors.prestashop_db_host ? 'border-red-300' : 'border-gray-300'
+                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.prestashop_db_host ? 'border-red-500' : 'border-gray-600'
                 }`}
                 placeholder="localhost"
                 aria-describedby={errors.prestashop_db_host ? 'prestashop_db_host-error' : undefined}
                 aria-invalid={!!errors.prestashop_db_host}
               />
               {errors.prestashop_db_host && (
-                <p id="prestashop_db_host-error" className="mt-1 text-sm text-red-600" role="alert">
+                <p id="prestashop_db_host-error" className="mt-1 text-sm text-red-400" role="alert">
                   {errors.prestashop_db_host}
                 </p>
               )}
             </div>
             <div>
-              <label htmlFor="prestashop_db_name" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="prestashop_db_name" className="block text-sm font-medium text-gray-300">
                 Database Name *
               </label>
               <input
@@ -1309,21 +1315,21 @@ function UpdateCredentialsModal({
                 required
                 value={formData.prestashop_db_name}
                 onChange={(e) => setFormData({ ...formData, prestashop_db_name: e.target.value })}
-                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                  errors.prestashop_db_name ? 'border-red-300' : 'border-gray-300'
+                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.prestashop_db_name ? 'border-red-500' : 'border-gray-600'
                 }`}
                 placeholder="prestashop_db"
                 aria-describedby={errors.prestashop_db_name ? 'prestashop_db_name-error' : undefined}
                 aria-invalid={!!errors.prestashop_db_name}
               />
               {errors.prestashop_db_name && (
-                <p id="prestashop_db_name-error" className="mt-1 text-sm text-red-600" role="alert">
+                <p id="prestashop_db_name-error" className="mt-1 text-sm text-red-400" role="alert">
                   {errors.prestashop_db_name}
                 </p>
               )}
             </div>
             <div>
-              <label htmlFor="prestashop_db_username" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="prestashop_db_username" className="block text-sm font-medium text-gray-300">
                 Database User *
               </label>
               <input
@@ -1333,21 +1339,21 @@ function UpdateCredentialsModal({
                 required
                 value={formData.prestashop_db_username}
                 onChange={(e) => setFormData({ ...formData, prestashop_db_username: e.target.value })}
-                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                  errors.prestashop_db_username ? 'border-red-300' : 'border-gray-300'
+                className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.prestashop_db_username ? 'border-red-500' : 'border-gray-600'
                 }`}
                 placeholder="prestashop_user"
                 aria-describedby={errors.prestashop_db_username ? 'prestashop_db_username-error' : undefined}
                 aria-invalid={!!errors.prestashop_db_username}
               />
               {errors.prestashop_db_username && (
-                <p id="prestashop_db_username-error" className="mt-1 text-sm text-red-600" role="alert">
+                <p id="prestashop_db_username-error" className="mt-1 text-sm text-red-400" role="alert">
                   {errors.prestashop_db_username}
                 </p>
               )}
             </div>
             <div>
-              <label htmlFor="prestashop_db_password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="prestashop_db_password" className="block text-sm font-medium text-gray-300">
                 Database Password *
               </label>
               <div className="relative">
@@ -1358,8 +1364,8 @@ function UpdateCredentialsModal({
                   required
                   value={formData.prestashop_db_password}
                   onChange={(e) => setFormData({ ...formData, prestashop_db_password: e.target.value })}
-                  className={`mt-1 block w-full border rounded-md px-3 py-2 pr-10 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                    errors.prestashop_db_password ? 'border-red-300' : 'border-gray-300'
+                  className={`mt-1 block w-full border rounded-md px-3 py-2 pr-10 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.prestashop_db_password ? 'border-red-500' : 'border-gray-600'
                   }`}
                   placeholder="••••••••"
                   aria-describedby={errors.prestashop_db_password ? 'prestashop_db_password-error' : undefined}
@@ -1384,14 +1390,14 @@ function UpdateCredentialsModal({
                 </button>
               </div>
               {errors.prestashop_db_password && (
-                <p id="prestashop_db_password-error" className="mt-1 text-sm text-red-600" role="alert">
+                <p id="prestashop_db_password-error" className="mt-1 text-sm text-red-400" role="alert">
                   {errors.prestashop_db_password}
                 </p>
               )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="prestashop_db_port" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="prestashop_db_port" className="block text-sm font-medium text-gray-300">
                   Port *
                 </label>
                 <input
@@ -1403,20 +1409,20 @@ function UpdateCredentialsModal({
                   max="65535"
                   value={formData.prestashop_db_port}
                   onChange={(e) => setFormData({ ...formData, prestashop_db_port: parseInt(e.target.value) })}
-                  className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                    errors.prestashop_db_port ? 'border-red-300' : 'border-gray-300'
+                  className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.prestashop_db_port ? 'border-red-500' : 'border-gray-600'
                   }`}
                   aria-describedby={errors.prestashop_db_port ? 'prestashop_db_port-error' : undefined}
                   aria-invalid={!!errors.prestashop_db_port}
                 />
                 {errors.prestashop_db_port && (
-                  <p id="prestashop_db_port-error" className="mt-1 text-sm text-red-600" role="alert">
+                  <p id="prestashop_db_port-error" className="mt-1 text-sm text-red-400" role="alert">
                     {errors.prestashop_db_port}
                   </p>
                 )}
               </div>
               <div>
-                <label htmlFor="prestashop_db_prefix" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="prestashop_db_prefix" className="block text-sm font-medium text-gray-300">
                   Table Prefix *
                 </label>
                 <input
@@ -1426,15 +1432,15 @@ function UpdateCredentialsModal({
                   required
                   value={formData.prestashop_db_prefix}
                   onChange={(e) => setFormData({ ...formData, prestashop_db_prefix: e.target.value })}
-                  className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                    errors.prestashop_db_prefix ? 'border-red-300' : 'border-gray-300'
+                  className={`mt-1 block w-full border rounded-md px-3 py-2 text-sm bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.prestashop_db_prefix ? 'border-red-500' : 'border-gray-600'
                   }`}
                   placeholder="ps_"
                   aria-describedby={errors.prestashop_db_prefix ? 'prestashop_db_prefix-error' : undefined}
                   aria-invalid={!!errors.prestashop_db_prefix}
                 />
                 {errors.prestashop_db_prefix && (
-                  <p id="prestashop_db_prefix-error" className="mt-1 text-sm text-red-600" role="alert">
+                  <p id="prestashop_db_prefix-error" className="mt-1 text-sm text-red-400" role="alert">
                     {errors.prestashop_db_prefix}
                   </p>
                 )}
@@ -1444,7 +1450,7 @@ function UpdateCredentialsModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                className="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-md"
               >
                 Cancel
               </button>

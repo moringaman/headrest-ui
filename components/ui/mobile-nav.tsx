@@ -139,6 +139,11 @@ export default function MobileNav({ currentPage, user, onSignOut, selectedOrg, o
         current: currentPage === 'api-keys'
       },
       {
+        name: 'Auth Settings',
+        href: '/dashboard/auth-settings',
+        current: currentPage === 'auth-settings'
+      },
+      {
         name: 'Documentation',
         href: '/docs',
         current: currentPage === 'docs'

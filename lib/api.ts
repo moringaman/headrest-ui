@@ -21,6 +21,11 @@ export interface Organization {
   prestashop_db_prefix?: string
   // PrestaShop URL for image URLs
   prestashop_url?: string
+  // Firebase authentication configuration
+  firebase_project_id?: string
+  firebase_service_account?: string  // Encrypted service account JSON
+  firebase_web_api_key?: string
+  oauth_enabled?: boolean
 }
 
 
@@ -33,6 +38,10 @@ export interface UpdateOrganizationData {
   name?: string
   slug?: string
   prestashop_url?: string
+  firebase_project_id?: string
+  firebase_service_account?: string
+  firebase_web_api_key?: string
+  oauth_enabled?: boolean
 }
 
 export interface CreatePrestaShopCredentialsData {
@@ -103,6 +112,20 @@ export interface UpdateApiKeyData {
   name?: string
   description?: string
   expires_at?: string
+}
+
+export interface FirebaseAuthConfig {
+  firebase_project_id: string
+  firebase_service_account: string
+  firebase_web_api_key: string
+  oauth_enabled: boolean
+}
+
+export interface UpdateFirebaseAuthConfigData {
+  firebase_project_id?: string
+  firebase_service_account?: string
+  firebase_web_api_key?: string
+  oauth_enabled?: boolean
 }
 
 export class ApiClient {
@@ -515,16 +538,56 @@ export class ApiClient {
   }
 
   async testApiKey(apiKey: string, organizationId?: string) {
-    const endpoint = organizationId 
+    const endpoint = organizationId
       ? `/organizations/${organizationId}/products`
       : '/products'
-    
+
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       'x-api-key': apiKey
     }
-    
+
     return this.request(endpoint, { headers })
+  }
+
+  // Firebase Auth Configuration endpoints
+  async updateFirebaseAuthConfig(data: UpdateFirebaseAuthConfigData, token?: string): Promise<Organization> {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request<Organization>('/organizations/me/firebase-auth', {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(data)
+    })
+  }
+
+  async getFirebaseAuthConfig(token?: string): Promise<FirebaseAuthConfig | null> {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    try {
+      return await this.request<FirebaseAuthConfig>('/organizations/me/firebase-auth', { headers })
+    } catch (error: any) {
+      // If no config exists, return null
+      if (error.message?.includes('404') || error.message?.includes('Not Found')) {
+        return null
+      }
+      throw error
+    }
+  }
+
+  async deleteFirebaseAuthConfig(token?: string): Promise<void> {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request('/organizations/me/firebase-auth', {
+      method: 'DELETE',
+      headers
+    })
   }
 }
 

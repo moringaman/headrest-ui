@@ -199,13 +199,13 @@ export default function ApiKeysPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+            <div className="h-8 bg-gray-700 rounded w-1/4 mb-6"></div>
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-20 bg-gray-200 rounded"></div>
+                <div key={i} className="h-20 bg-gray-800/50 rounded border border-gray-700"></div>
               ))}
             </div>
           </div>
@@ -215,13 +215,13 @@ export default function ApiKeysPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-suede-primary focus:ring-offset-2 rounded">
+              <Link href="/" className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded">
                 <Image
                   src="/assets/suede-logo-transparent.png"
                   alt="Headrest"
@@ -230,12 +230,12 @@ export default function ApiKeysPage() {
                   className="h-8 w-auto"
                   priority
                 />
-                <span className="text-xl font-bold text-suede-text">Headrest</span>
+                <span className="text-xl font-bold text-white">Headrest</span>
               </Link>
-              <div className="h-6 w-px bg-gray-300"></div>
+              <div className="h-6 w-px bg-gray-700"></div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">API Keys</h1>
-                <p className="mt-2 text-gray-600">
+                <h1 className="text-3xl font-bold text-white">API Keys</h1>
+                <p className="mt-2 text-gray-400">
                   Manage your API keys for secure access to your PrestaShop data
                 </p>
               </div>
@@ -244,51 +244,57 @@ export default function ApiKeysPage() {
               {/* Desktop button - hidden on mobile */}
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="hidden lg:block bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+                className="hidden lg:block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Create API Key
               </button>
-              
+
               {/* Mobile navigation */}
-              <MobileNav 
-                currentPage="api-keys" 
+              <MobileNav
+                currentPage="api-keys"
                 user={user}
               />
             </div>
           </div>
-          
+
           {/* Navigation - hidden on mobile */}
           <nav className="mt-6 hidden lg:block">
             <div className="flex space-x-8">
-              <Link 
-                href="/dashboard" 
-                className="text-gray-500 hover:text-gray-700"
+              <Link
+                href="/dashboard"
+                className="text-gray-400 hover:text-white transition-colors"
               >
                 Dashboard
               </Link>
-              <Link 
-                href="/dashboard/stores" 
-                className="text-gray-500 hover:text-gray-700"
+              <Link
+                href="/dashboard/stores"
+                className="text-gray-400 hover:text-white transition-colors"
               >
                 Manage Stores
               </Link>
-              <Link 
-                href="/dashboard/api-keys" 
-                className="text-primary-600 font-medium"
+              <Link
+                href="/dashboard/api-keys"
+                className="text-blue-400 font-medium"
               >
                 API Keys
+              </Link>
+              <Link
+                href="/dashboard/auth-settings"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Auth Settings
               </Link>
             </div>
           </nav>
         </div>
 
         {/* Test API Key Section */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Test API Key</h2>
-          <p className="text-gray-600 mb-4">
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl p-6 mb-8">
+          <h2 className="text-lg font-semibold text-white mb-4">Test API Key</h2>
+          <p className="text-gray-400 mb-4">
             Paste your API key below to test if it's working correctly.
           </p>
-          
+
           <div className="flex items-center space-x-3">
             <div className="flex-1 relative">
               <input
@@ -296,7 +302,7 @@ export default function ApiKeysPage() {
                 placeholder="Paste your API key here..."
                 value={testApiKeyInput}
                 onChange={(e) => setTestApiKeyInput(e.target.value)}
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 pr-10 bg-gray-900/50 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button
                 type="button"
@@ -344,31 +350,31 @@ export default function ApiKeysPage() {
         <div className="space-y-4 mb-8">
           {apiKeys && apiKeys.length > 0 ? (
             apiKeys.map((apiKey) => (
-              <div key={apiKey.id} className="bg-white rounded-lg shadow-sm border p-6">
+              <div key={apiKey.id} className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3">
-                      <h3 className="text-lg font-semibold text-gray-900">{apiKey.name}</h3>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <h3 className="text-lg font-semibold text-white">{apiKey.name}</h3>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 border border-green-500/20 text-green-400">
                         Active
                       </span>
                     </div>
-                    
+
                     {apiKey.description && (
-                      <p className="mt-1 text-sm text-gray-600">{apiKey.description}</p>
+                      <p className="mt-1 text-sm text-gray-400">{apiKey.description}</p>
                     )}
-                    
+
                     <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div>
-                        <span className="font-medium text-gray-500">API Key:</span>
+                        <span className="font-medium text-gray-300">API Key:</span>
                         <div className="mt-1 flex items-center space-x-2">
-                          <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono text-gray-900 truncate flex-1">
+                          <code className="bg-gray-900 border border-gray-700 px-2 py-1 rounded text-xs font-mono text-green-400 truncate flex-1">
                             {apiKey.key ? apiKey.key : '••••••••••••••••••••••••••••••••'}
                           </code>
                           {apiKey.key && (
                             <button
                               onClick={() => copyToClipboard(apiKey.key!)}
-                              className="text-gray-400 hover:text-gray-600 p-1"
+                              className="text-gray-400 hover:text-white p-1"
                               title="Copy to clipboard"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -378,7 +384,7 @@ export default function ApiKeysPage() {
                           )}
                           <button
                             onClick={() => handleView(apiKey)}
-                            className="text-blue-600 hover:text-blue-700 p-1"
+                            className="text-blue-400 hover:text-blue-300 p-1"
                             title="View API key details"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -388,40 +394,40 @@ export default function ApiKeysPage() {
                           </button>
                         </div>
                       </div>
-                      
+
                       <div>
-                        <span className="font-medium text-gray-500">Created:</span>
-                        <p className="mt-1">
+                        <span className="font-medium text-gray-300">Created:</span>
+                        <p className="mt-1 text-gray-400">
                           {new Date(apiKey.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      
+
                       <div>
-                        <span className="font-medium text-gray-500">Last Used:</span>
-                        <p className="mt-1">
-                          {apiKey.last_used_at 
+                        <span className="font-medium text-gray-300">Last Used:</span>
+                        <p className="mt-1 text-gray-400">
+                          {apiKey.last_used_at
                             ? new Date(apiKey.last_used_at).toLocaleDateString()
                             : 'Never'
                           }
                         </p>
                       </div>
                     </div>
-                    
+
                     {apiKey.expires_at && (
                       <div className="mt-3">
-                        <span className="font-medium text-gray-500">Expires:</span>
-                        <p className="mt-1 text-sm">
+                        <span className="font-medium text-gray-300">Expires:</span>
+                        <p className="mt-1 text-sm text-gray-400">
                           {new Date(apiKey.expires_at).toLocaleDateString()}
                         </p>
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex items-center space-x-2 ml-4">
                     <button
                       onClick={() => handleTestApiKey(apiKey.key || '')}
                       disabled={!apiKey.key || testMutation.isPending}
-                      className="text-green-600 hover:text-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-green-400 hover:text-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       title={apiKey.key ? "Test API key" : "Cannot test - key not available"}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -431,29 +437,29 @@ export default function ApiKeysPage() {
 
                     <button
                       onClick={() => handleEdit(apiKey)}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-400 hover:text-white"
                       title="Edit API key"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
-                    
+
                     <button
                       onClick={() => handleRevoke(apiKey.id)}
                       disabled={revokeMutation.isPending}
-                      className="text-yellow-600 hover:text-yellow-700 disabled:opacity-50"
+                      className="text-yellow-400 hover:text-yellow-300 disabled:opacity-50"
                       title="Revoke API key"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
                       </svg>
                     </button>
-                    
+
                     <button
                       onClick={() => handleDelete(apiKey.id)}
                       disabled={deleteMutation.isPending}
-                      className="text-red-600 hover:text-red-700 disabled:opacity-50"
+                      className="text-red-400 hover:text-red-300 disabled:opacity-50"
                       title="Delete API key"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -465,17 +471,17 @@ export default function ApiKeysPage() {
               </div>
             ))
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border p-12 text-center">
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl p-12 text-center">
               <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
               </svg>
-              <h3 className="mt-4 text-lg font-medium text-gray-900">No API Keys</h3>
-              <p className="mt-2 text-gray-500">
+              <h3 className="mt-4 text-lg font-medium text-white">No API Keys</h3>
+              <p className="mt-2 text-gray-400">
                 Get started by creating your first API key to access your PrestaShop data programmatically.
               </p>
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="mt-4 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Create API Key
               </button>
@@ -484,16 +490,16 @@ export default function ApiKeysPage() {
         </div>
 
         {/* Use Cases and Code Snippets */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Use Cases & Code Examples</h2>
-          <p className="text-gray-600 mb-6">
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl p-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Use Cases & Code Examples</h2>
+          <p className="text-gray-400 mb-6">
             Learn how to use your API keys with these practical examples and code snippets.
           </p>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             {/* JavaScript/Node.js Example */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">JavaScript/Node.js</h3>
+              <h3 className="text-lg font-medium text-white">JavaScript/Node.js</h3>
               <div className="rounded-lg overflow-hidden">
                 <SyntaxHighlighter
                   language="javascript"
@@ -534,7 +540,7 @@ const dbConfig = await credentials.json();`}
 
             {/* Python Example */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">Python</h3>
+              <h3 className="text-lg font-medium text-white">Python</h3>
               <div className="rounded-lg overflow-hidden">
                 <SyntaxHighlighter
                   language="python"
@@ -573,7 +579,7 @@ org_data = org_response.json()`}
 
             {/* PHP Example */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">PHP</h3>
+              <h3 className="text-lg font-medium text-white">PHP</h3>
               <div className="rounded-lg overflow-hidden">
                 <SyntaxHighlighter
                   language="php"
@@ -611,7 +617,7 @@ echo "Found " . count($products) . " products";
 
             {/* cURL Example */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">cURL</h3>
+              <h3 className="text-lg font-medium text-white">cURL</h3>
               <div className="rounded-lg overflow-hidden">
                 <SyntaxHighlighter
                   language="bash"
@@ -643,40 +649,40 @@ curl -X GET \\
 
           {/* Common Use Cases */}
           <div className="mt-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Common Use Cases</h3>
+            <h3 className="text-lg font-medium text-white mb-4">Common Use Cases</h3>
             <div className="grid md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                 <div className="flex items-center mb-2">
-                  <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
-                  <h4 className="font-medium text-blue-900">Mobile Apps</h4>
+                  <h4 className="font-medium text-blue-400">Mobile Apps</h4>
                 </div>
-                <p className="text-sm text-blue-700">
+                <p className="text-sm text-blue-300/80">
                   Use API keys to fetch products and manage orders in your mobile applications.
                 </p>
               </div>
 
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
                 <div className="flex items-center mb-2">
-                  <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
-                  <h4 className="font-medium text-green-900">Data Sync</h4>
+                  <h4 className="font-medium text-green-400">Data Sync</h4>
                 </div>
-                <p className="text-sm text-green-700">
+                <p className="text-sm text-green-300/80">
                   Automate product synchronization between systems using scheduled API calls.
                 </p>
               </div>
 
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
                 <div className="flex items-center mb-2">
-                  <svg className="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-purple-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
-                  <h4 className="font-medium text-purple-900">Analytics</h4>
+                  <h4 className="font-medium text-purple-400">Analytics</h4>
                 </div>
-                <p className="text-sm text-purple-700">
+                <p className="text-sm text-purple-300/80">
                   Monitor API usage and track performance with the usage statistics endpoint.
                 </p>
               </div>
@@ -685,8 +691,8 @@ curl -X GET \\
 
           {/* Security Best Practices */}
           <div className="mt-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Security Best Practices</h3>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <h3 className="text-lg font-medium text-white mb-4">Security Best Practices</h3>
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <svg className="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -694,8 +700,8 @@ curl -X GET \\
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h4 className="text-sm font-medium text-yellow-800">Important Security Tips</h4>
-                  <div className="mt-2 text-sm text-yellow-700">
+                  <h4 className="text-sm font-medium text-yellow-400">Important Security Tips</h4>
+                  <div className="mt-2 text-sm text-yellow-300/80">
                     <ul className="list-disc list-inside space-y-1">
                       <li>Never expose API keys in frontend JavaScript code</li>
                       <li>Store keys securely in environment variables</li>
@@ -714,24 +720,24 @@ curl -X GET \\
           <div className="mt-8">
             <button
               onClick={() => setShowAdvancedExamples(!showAdvancedExamples)}
-              className="flex items-center text-lg font-medium text-gray-900 hover:text-primary-600 transition-colors"
+              className="flex items-center text-lg font-medium text-white hover:text-blue-400 transition-colors"
             >
-              <svg 
-                className={`w-5 h-5 mr-2 transition-transform ${showAdvancedExamples ? 'rotate-90' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className={`w-5 h-5 mr-2 transition-transform ${showAdvancedExamples ? 'rotate-90' : ''}`}
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
               Advanced Examples
             </button>
-            
+
             {showAdvancedExamples && (
               <div className="mt-4 space-y-6">
                 {/* React Hook Example */}
                 <div className="space-y-4">
-                  <h4 className="text-md font-medium text-gray-900">React Custom Hook</h4>
+                  <h4 className="text-md font-medium text-white">React Custom Hook</h4>
                   <div className="rounded-lg overflow-hidden">
                     <SyntaxHighlighter
                       language="javascript"
@@ -809,7 +815,7 @@ const MyComponent = () => {
 
                 {/* Node.js Service Class */}
                 <div className="space-y-4">
-                  <h4 className="text-md font-medium text-gray-900">Node.js Service Class</h4>
+                  <h4 className="text-md font-medium text-white">Node.js Service Class</h4>
                   <div className="rounded-lg overflow-hidden">
                     <SyntaxHighlighter
                       language="javascript"
@@ -891,7 +897,7 @@ const orgInfo = await prestaShop.getOrganizationInfo();`}
 
                 {/* Webhook Integration */}
                 <div className="space-y-4">
-                  <h4 className="text-md font-medium text-gray-900">Webhook Integration</h4>
+                  <h4 className="text-md font-medium text-white">Webhook Integration</h4>
                   <div className="rounded-lg overflow-hidden">
                     <SyntaxHighlighter
                       language="javascript"
@@ -1034,15 +1040,15 @@ function CreateApiKeyModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Create API Key</h3>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl max-w-md w-full">
+        <div className="px-6 py-4 border-b border-gray-700">
+          <h3 className="text-lg font-medium text-white">Create API Key</h3>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Name *
             </label>
             <input
@@ -1050,42 +1056,42 @@ function CreateApiKeyModal({
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 placeholder-gray-500"
+              className="w-full px-3 py-2 bg-gray-900/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500"
               placeholder="e.g., Mobile App Key"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 placeholder-gray-500"
+              className="w-full px-3 py-2 bg-gray-900/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500"
               placeholder="Optional description of what this API key is used for"
               rows={3}
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Expiration Date
             </label>
             <input
               type="datetime-local"
               value={formData.expires_at}
               onChange={(e) => setFormData({ ...formData, expires_at: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
+              className="w-full px-3 py-2 bg-gray-900/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             />
           </div>
         </form>
-        
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+
+        <div className="px-6 py-4 bg-gray-800/30 border-t border-gray-700 flex justify-end space-x-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            className="px-4 py-2 text-gray-300 bg-gray-900/50 border border-gray-600 rounded-md hover:bg-gray-900 transition-colors"
           >
             Cancel
           </button>
@@ -1093,7 +1099,7 @@ function CreateApiKeyModal({
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
             {isLoading ? 'Creating...' : 'Create API Key'}
           </button>
@@ -1132,15 +1138,15 @@ function EditApiKeyModal({
 
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Edit API Key</h3>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl max-w-md w-full">
+        <div className="px-6 py-4 border-b border-gray-700">
+          <h3 className="text-lg font-medium text-white">Edit API Key</h3>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Name *
             </label>
             <input
@@ -1148,40 +1154,40 @@ function EditApiKeyModal({
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
+              className="w-full px-3 py-2 bg-gray-900/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
+              className="w-full px-3 py-2 bg-gray-900/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
               rows={3}
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Expiration Date
             </label>
             <input
               type="datetime-local"
               value={formData.expires_at}
               onChange={(e) => setFormData({ ...formData, expires_at: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
+              className="w-full px-3 py-2 bg-gray-900/50 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             />
           </div>
         </form>
-        
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+
+        <div className="px-6 py-4 bg-gray-800/30 border-t border-gray-700 flex justify-end space-x-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            className="px-4 py-2 text-gray-300 bg-gray-900/50 border border-gray-600 rounded-md hover:bg-gray-900 transition-colors"
           >
             Cancel
           </button>
@@ -1189,7 +1195,7 @@ function EditApiKeyModal({
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
             {isLoading ? 'Updating...' : 'Update API Key'}
           </button>
@@ -1236,23 +1242,23 @@ function CreatedApiKeyModal({
 
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full">
-        <div className="px-6 py-4 border-b border-gray-200">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl max-w-lg w-full">
+        <div className="px-6 py-4 border-b border-gray-700">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-lg font-medium text-gray-900">API Key Created Successfully</h3>
+              <h3 className="text-lg font-medium text-white">API Key Created Successfully</h3>
             </div>
           </div>
         </div>
-        
+
         <div className="px-6 py-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-md p-4 mb-4">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -1260,47 +1266,47 @@ function CreatedApiKeyModal({
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800">
+                <h3 className="text-sm font-medium text-blue-400">
                   API Key Created
                 </h3>
-                <div className="mt-2 text-sm text-blue-700">
+                <div className="mt-2 text-sm text-blue-300/80">
                   <p>Your API key has been created successfully. You can view and copy it anytime from the API Keys page.</p>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Name
               </label>
-              <p className="text-sm text-gray-900">{apiKey.name}</p>
+              <p className="text-sm text-white">{apiKey.name}</p>
             </div>
-            
+
             {apiKey.description && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Description
                 </label>
-                <p className="text-sm text-gray-900">{apiKey.description}</p>
+                <p className="text-sm text-white">{apiKey.description}</p>
               </div>
             )}
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 API Key
               </label>
               <div className="flex items-center space-x-2">
-                <code className="flex-1 bg-gray-100 px-3 py-2 rounded text-sm font-mono break-all text-gray-900">
+                <code className="flex-1 bg-gray-900 border border-gray-700 px-3 py-2 rounded text-sm font-mono break-all text-green-400">
                   {apiKey.key}
                 </code>
                 <button
                   onClick={copyToClipboard}
                   disabled={copied}
                   className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                    copied 
-                      ? 'bg-green-100 text-green-800 border border-green-200' 
+                    copied
+                      ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                       : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
@@ -1310,11 +1316,11 @@ function CreatedApiKeyModal({
             </div>
           </div>
         </div>
-        
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+
+        <div className="px-6 py-4 bg-gray-800/30 border-t border-gray-700 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             Continue
           </button>
@@ -1404,55 +1410,55 @@ function ViewApiKeyModal({
 
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full">
-        <div className="px-6 py-4 border-b border-gray-200">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl max-w-lg w-full">
+        <div className="px-6 py-4 border-b border-gray-700">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-lg font-medium text-gray-900">View API Key</h3>
+              <h3 className="text-lg font-medium text-white">View API Key</h3>
             </div>
           </div>
         </div>
-        
+
         <div className="px-6 py-4">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Name
               </label>
-              <p className="text-sm text-gray-900">{apiKey.name}</p>
+              <p className="text-sm text-white">{apiKey.name}</p>
             </div>
-            
+
             {apiKey.description && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Description
                 </label>
-                <p className="text-sm text-gray-900">{apiKey.description}</p>
+                <p className="text-sm text-white">{apiKey.description}</p>
               </div>
             )}
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 API Key
               </label>
               {apiKey.key ? (
                 <div className="flex items-center space-x-2">
-                  <code className="flex-1 bg-gray-100 px-3 py-2 rounded text-sm font-mono break-all text-gray-900">
+                  <code className="flex-1 bg-gray-900 border border-gray-700 px-3 py-2 rounded text-sm font-mono break-all text-green-400">
                     {apiKey.key}
                   </code>
                   <button
                     onClick={copyToClipboard}
                     disabled={copied}
                     className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                      copied 
-                        ? 'bg-green-100 text-green-800 border border-green-200' 
+                      copied
+                        ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                         : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                   >
@@ -1468,7 +1474,7 @@ function ViewApiKeyModal({
                   </button>
                 </div>
               ) : (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-4">
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <svg className="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -1476,10 +1482,10 @@ function ViewApiKeyModal({
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-sm font-medium text-yellow-800">
+                      <h3 className="text-sm font-medium text-yellow-400">
                         API Key Not Available
                       </h3>
-                      <div className="mt-2 text-sm text-yellow-700">
+                      <div className="mt-2 text-sm text-yellow-300/80">
                         <p>For security reasons, API keys are only shown once when created. If you need to use this key, you'll need to create a new one.</p>
                       </div>
                     </div>
@@ -1490,20 +1496,20 @@ function ViewApiKeyModal({
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Created
                 </label>
-                <p className="text-gray-900">
+                <p className="text-white">
                   {new Date(apiKey.created_at).toLocaleDateString()}
                 </p>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Last Used
                 </label>
-                <p className="text-gray-900">
-                  {apiKey.last_used_at 
+                <p className="text-white">
+                  {apiKey.last_used_at
                     ? new Date(apiKey.last_used_at).toLocaleDateString()
                     : 'Never'
                   }
@@ -1513,21 +1519,21 @@ function ViewApiKeyModal({
 
             {apiKey.expires_at && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Expires
                 </label>
-                <p className="text-gray-900">
+                <p className="text-white">
                   {new Date(apiKey.expires_at).toLocaleDateString()}
                 </p>
               </div>
             )}
           </div>
         </div>
-        
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+
+        <div className="px-6 py-4 bg-gray-800/30 border-t border-gray-700 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
           >
             Close
           </button>
