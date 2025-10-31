@@ -14,7 +14,7 @@ import {
 } from '@/lib/api'
 
 export default function AuthSettingsPage() {
-  const { user, session } = useAuth()
+  const { user, session, signOut } = useAuth()
   const { addNotification } = useAppStore()
   const queryClient = useQueryClient()
 
@@ -258,9 +258,30 @@ export default function AuthSettingsPage() {
     )
   }
 
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      addNotification({
+        type: 'success',
+        title: 'Signed Out',
+        message: 'You have been signed out successfully'
+      })
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        title: 'Sign Out Failed',
+        message: 'Failed to sign out. Please try again.'
+      })
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <MobileNav />
+      <MobileNav
+        currentPage="auth-settings"
+        user={user}
+        onSignOut={handleSignOut}
+      />
 
       {/* Header */}
       <div className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
