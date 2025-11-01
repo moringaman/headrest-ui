@@ -278,12 +278,6 @@ export default function ApiKeysPage() {
               >
                 API Keys
               </Link>
-              <Link
-                href="/dashboard/auth-settings"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Auth Settings
-              </Link>
             </div>
           </nav>
         </div>

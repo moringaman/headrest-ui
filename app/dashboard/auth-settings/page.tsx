@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import MobileNav from '@/components/ui/mobile-nav'
 import { useAuth } from '@/components/providers/auth-provider'
 import { useAppStore } from '@/lib/store'
@@ -13,12 +14,17 @@ import {
   type UpdateFirebaseAuthConfigData
 } from '@/lib/api'
 
-export default function AuthSettingsPage() {
+type AuthProvider = 'firebase' | 'google' | 'apple'
+
+function AuthSettingsContent() {
   const { user, session, signOut } = useAuth()
   const { addNotification } = useAppStore()
   const queryClient = useQueryClient()
+  const searchParams = useSearchParams()
+  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null)
+  const [activeProvider, setActiveProvider] = useState<AuthProvider>('firebase')
 
-  // Form state
+  // Firebase form state
   const [projectId, setProjectId] = useState('')
   const [webApiKey, setWebApiKey] = useState('')
   const [serviceAccount, setServiceAccount] = useState('')
@@ -35,28 +41,88 @@ export default function AuthSettingsPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [configStatus, setConfigStatus] = useState<'none' | 'partial' | 'complete'>('none')
 
-  // Fetch current organization
-  const { data: organization, isLoading: orgLoading } = useQuery<Organization>({
-    queryKey: ['current-organization'],
-    queryFn: () => apiClient.getCurrentOrganization(session?.access_token),
-    enabled: !!session?.access_token,
+  // Fetch all organizations
+  const { data: organizations = [], isLoading: organizationsLoading } = useQuery<Organization[]>({
+    queryKey: ['organizations', user?.id],
+    queryFn: () => apiClient.getOrganizations(session?.access_token),
+    enabled: !!user?.id && !!session?.access_token,
   })
+
+  // Auto-select organization based on URL parameter or first organization
+  useEffect(() => {
+    if (organizations && organizations.length > 0 && !selectedOrg) {
+      const selectedId = searchParams.get('org')
+      if (selectedId) {
+        // Find organization by ID from URL parameter
+        const org = organizations.find(o => o.id === selectedId)
+        if (org) {
+          setSelectedOrg(org)
+        } else {
+          // Fallback to first organization if ID not found
+          setSelectedOrg(organizations[0])
+        }
+      } else {
+        // No URL parameter, select first organization
+        setSelectedOrg(organizations[0])
+      }
+    }
+  }, [organizations, selectedOrg, searchParams])
+
+  // Fetch the full organization details with Firebase fields for selected org
+  const { data: organization, isLoading: orgLoading, error: orgError } = useQuery({
+    queryKey: ['auth-settings-organization', selectedOrg?.id],
+    queryFn: async (): Promise<Organization> => {
+      if (!selectedOrg?.id) {
+        throw new Error('No organization selected')
+      }
+      console.log('Fetching organization data for ID:', selectedOrg.id)
+      const org = await apiClient.getOrganization(selectedOrg.id, session?.access_token)
+      console.log('Raw organization response:', org)
+      return org
+    },
+    enabled: !!session?.access_token && !!selectedOrg?.id,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0, // Always fetch fresh data
+    gcTime: 0, // Don't cache
+  })
+
+  // Debug organization data
+  useEffect(() => {
+    if (organization) {
+      console.log('Organization state updated:', {
+        fullObject: organization,
+        hasFirebaseProjectId: !!organization.firebase_project_id,
+        hasFirebaseWebApiKey: !!organization.firebase_web_api_key,
+        hasFirebaseServiceAccount: !!organization.firebase_service_account,
+        hasOauthEnabled: organization.oauth_enabled !== undefined
+      })
+    }
+    if (orgError) {
+      console.error('Organization fetch error:', orgError)
+    }
+  }, [organization, orgError])
 
   // Load existing configuration
   useEffect(() => {
     if (organization) {
-      if (organization.firebase_project_id) {
-        setProjectId(organization.firebase_project_id)
-      }
-      if (organization.firebase_web_api_key) {
-        setWebApiKey(organization.firebase_web_api_key)
-      }
+      console.log('Loading Firebase config from organization:', {
+        firebase_project_id: organization.firebase_project_id,
+        firebase_web_api_key: organization.firebase_web_api_key,
+        firebase_service_account: organization.firebase_service_account ? 'Present' : 'Missing',
+        oauth_enabled: organization.oauth_enabled
+      })
+
+      // Always set values from organization (use empty string if undefined)
+      setProjectId(organization.firebase_project_id || '')
+      setWebApiKey(organization.firebase_web_api_key || '')
+      setServiceAccount(organization.firebase_service_account || '')
+      setOauthEnabled(organization.oauth_enabled || false)
+
       if (organization.firebase_service_account) {
-        setServiceAccount(organization.firebase_service_account)
         setFileName('service-account.json')
-      }
-      if (organization.oauth_enabled !== undefined) {
-        setOauthEnabled(organization.oauth_enabled)
+      } else {
+        setFileName('')
       }
 
       // Determine configuration status
@@ -259,7 +325,23 @@ export default function AuthSettingsPage() {
   if (orgLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="text-gray-400">Loading...</div>
+        <div className="text-gray-400">Loading organization...</div>
+      </div>
+    )
+  }
+
+  if (orgError || !organization) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="text-center">
+          <div className="text-red-400 mb-2">Failed to load organization</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     )
   }
@@ -303,6 +385,31 @@ export default function AuthSettingsPage() {
                 </svg>
               </Link>
               <h1 className="text-2xl font-bold text-white">Authentication Settings</h1>
+
+              {/* Organization Selector */}
+              {organizations.length > 1 && (
+                <div className="relative">
+                  <select
+                    value={selectedOrg?.id || ''}
+                    onChange={(e) => {
+                      const org = organizations.find(o => o.id === e.target.value)
+                      if (org) {
+                        setSelectedOrg(org)
+                      }
+                    }}
+                    className="bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-10"
+                  >
+                    {organizations.map(org => (
+                      <option key={org.id} value={org.id}>
+                        {org.name}
+                      </option>
+                    ))}
+                  </select>
+                  <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              )}
             </div>
 
             {/* Configuration Status Badge */}
@@ -328,30 +435,124 @@ export default function AuthSettingsPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Info Banner */}
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6">
-          <div className="flex items-start space-x-3">
-            <svg className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div className="flex-1">
-              <h3 className="text-sm font-medium text-blue-400 mb-1">Firebase Authentication Configuration</h3>
-              <p className="text-sm text-blue-300/80">
-                Configure Firebase authentication for your organization. This allows your users to authenticate using Firebase Auth providers.
-                All credentials are encrypted and stored securely.
-              </p>
+        {/* Organization Display */}
+        <div className="bg-gray-800/30 border border-gray-700 rounded-lg p-4 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-400">Configuring authentication for</p>
+              <p className="text-lg font-semibold text-white">{selectedOrg?.name}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-400">Plan</p>
+              <p className="text-sm font-medium text-blue-400 capitalize">{selectedOrg?.plan_tier}</p>
             </div>
           </div>
         </div>
 
-        {/* Main Form */}
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
-          <div className="p-6 border-b border-gray-700">
-            <h2 className="text-lg font-semibold text-white">Firebase Configuration</h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Configure your Firebase project settings for authentication
-            </p>
+        {/* Provider Tabs */}
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl mb-6">
+          <div className="border-b border-gray-700">
+            <nav className="flex space-x-1 p-2" aria-label="Auth Providers">
+              <button
+                onClick={() => setActiveProvider('firebase')}
+                className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeProvider === 'firebase'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                }`}
+              >
+                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3.89 15.672L6.255.461A.542.542 0 017.27.288l2.543 4.771zm16.794 3.692l-2.25-14a.54.54 0 00-.919-.295L3.316 19.365l7.856 4.427a1.621 1.621 0 001.588 0zM14.3 7.147l-1.82-3.482a.542.542 0 00-.96 0L3.53 17.984z"/>
+                </svg>
+                Firebase
+                {organization?.firebase_project_id && (
+                  <span className="ml-2 w-2 h-2 bg-green-400 rounded-full"></span>
+                )}
+              </button>
+
+              <button
+                onClick={() => setActiveProvider('google')}
+                className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeProvider === 'google'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                }`}
+                disabled
+              >
+                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Google
+                <span className="ml-2 px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded-full">Coming Soon</span>
+              </button>
+
+              <button
+                onClick={() => setActiveProvider('apple')}
+                className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeProvider === 'apple'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                }`}
+                disabled
+              >
+                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                </svg>
+                Apple
+                <span className="ml-2 px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded-full">Coming Soon</span>
+              </button>
+            </nav>
           </div>
+
+          {/* Info Banner - Dynamic based on provider */}
+          <div className="p-4 bg-blue-500/10 border-b border-gray-700">
+            <div className="flex items-start space-x-3">
+              <svg className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="flex-1">
+                {activeProvider === 'firebase' && (
+                  <>
+                    <h3 className="text-sm font-medium text-blue-400 mb-1">Firebase Authentication</h3>
+                    <p className="text-sm text-blue-300/80">
+                      Configure Firebase authentication for this organization. This allows your users to authenticate using Firebase Auth providers including email/password, phone, and social logins.
+                    </p>
+                  </>
+                )}
+                {activeProvider === 'google' && (
+                  <>
+                    <h3 className="text-sm font-medium text-blue-400 mb-1">Google Sign-In</h3>
+                    <p className="text-sm text-blue-300/80">
+                      Enable users to sign in with their Google accounts. This provider will be available soon.
+                    </p>
+                  </>
+                )}
+                {activeProvider === 'apple' && (
+                  <>
+                    <h3 className="text-sm font-medium text-blue-400 mb-1">Sign in with Apple</h3>
+                    <p className="text-sm text-blue-300/80">
+                      Enable users to sign in with their Apple ID. This provider will be available soon.
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Provider Configuration Forms */}
+        {activeProvider === 'firebase' && (
+          <>
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl">
+            <div className="p-6 border-b border-gray-700">
+              <h2 className="text-lg font-semibold text-white">Firebase Configuration</h2>
+              <p className="text-sm text-gray-400 mt-1">
+                Configure your Firebase project settings for authentication
+              </p>
+            </div>
 
           <div className="p-6 space-y-6">
             {/* Firebase Project ID */}
@@ -610,7 +811,60 @@ export default function AuthSettingsPage() {
             </div>
           </div>
         </div>
+          </>
+        )}
+
+        {/* Google Provider Configuration */}
+        {activeProvider === 'google' && (
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Google Sign-In</h3>
+              <p className="text-gray-400 text-sm">
+                Google authentication provider configuration will be available soon. This will allow your users to sign in using their Google accounts.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Apple Provider Configuration */}
+        {activeProvider === 'apple' && (
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Sign in with Apple</h3>
+              <p className="text-gray-400 text-sm">
+                Apple authentication provider configuration will be available soon. This will allow your users to sign in using their Apple ID.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
+  )
+}
+
+export default function AuthSettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <p className="mt-4 text-gray-400">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <AuthSettingsContent />
+    </Suspense>
   )
 }
