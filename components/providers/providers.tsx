@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { AuthProvider } from './auth-provider'
+import { ConfigCatProvider } from './configcat-provider'
 import { Notifications } from '@/components/ui/notifications'
 import { useState } from 'react'
 
@@ -36,8 +37,10 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {children}
-        <Notifications />
+        <ConfigCatProvider>
+          {children}
+          <Notifications />
+        </ConfigCatProvider>
       </AuthProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

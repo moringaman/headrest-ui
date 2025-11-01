@@ -190,12 +190,6 @@ export default function DashboardPage() {
                       API Keys
                     </Link>
                     <Link
-                      href="/dashboard/auth-settings"
-                      className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-                    >
-                      Auth Settings
-                    </Link>
-                    <Link
                       href="/docs"
                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                     >

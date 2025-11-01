@@ -311,12 +311,6 @@ function StoresContent() {
                   API Keys
                 </Link>
                 <Link
-                  href="/dashboard/auth-settings"
-                  className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-                >
-                  Auth Settings
-                </Link>
-                <Link
                   href="/docs"
                   className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                 >
@@ -426,6 +420,15 @@ function StoresContent() {
                           >
                             Update Credentials
                           </button>
+                          <Link
+                            href={`/dashboard/auth-settings?org=${selectedOrg.id}`}
+                            className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded-md text-sm font-medium inline-flex items-center"
+                          >
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Auth Settings
+                          </Link>
                           <button
                             onClick={() => setIsEditModalOpen(true)}
                             className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded-md text-sm font-medium"
@@ -548,6 +551,58 @@ function StoresContent() {
                                 </h3>
                                 <div className="mt-2 text-sm text-yellow-300">
                                   <p>Configure your PrestaShop URL to enable product images in API responses.</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Firebase Authentication Status */}
+                      <div className="border-t border-gray-700 pt-6 mt-4">
+                        <h4 className="text-lg font-medium text-white mb-4">Authentication</h4>
+                        {organizationDetails?.firebase_project_id && organizationDetails?.firebase_web_api_key ? (
+                          <div className="bg-green-500/10 border border-green-500/20 rounded-md p-4">
+                            <div className="flex">
+                              <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                              <div className="ml-3 flex-1">
+                                <h3 className="text-sm font-medium text-green-400">
+                                  Firebase Authentication Configured
+                                </h3>
+                                <div className="mt-2 text-sm text-green-300">
+                                  <div className="space-y-1">
+                                    <p>Project: <span className="font-mono">{organizationDetails.firebase_project_id}</span></p>
+                                    {organizationDetails.oauth_enabled && (
+                                      <p className="flex items-center">
+                                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        OAuth Enabled
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="bg-gray-700/30 border border-gray-600 rounded-md p-4">
+                            <div className="flex">
+                              <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                              <div className="ml-3">
+                                <h3 className="text-sm font-medium text-gray-300">
+                                  Firebase Authentication Not Configured
+                                </h3>
+                                <div className="mt-2 text-sm text-gray-400">
+                                  <p>Click "Auth Settings" to configure Firebase authentication for this store.</p>
                                 </div>
                               </div>
                             </div>
