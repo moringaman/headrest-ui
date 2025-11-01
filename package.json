@@ -12,6 +12,7 @@
     "railway:build": "npm install --legacy-peer-deps && npm run build"
   },
   "dependencies": {
+    "@configcat/sdk": "^1.0.2",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
     "@stripe/stripe-js": "^8.0.0",
