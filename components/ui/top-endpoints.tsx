@@ -1,13 +1,26 @@
 'use client'
 
-import { UsageStats } from '@/lib/api'
+import { UsageStats, DetailedUsageStats } from '@/lib/api'
 
 interface TopEndpointsProps {
-  usageStats: UsageStats | null
+  usageStats: UsageStats | DetailedUsageStats | null
 }
 
 export default function TopEndpoints({ usageStats }: TopEndpointsProps) {
-  if (!usageStats?.top_endpoints || usageStats.top_endpoints.length === 0) {
+  // Support both legacy top_endpoints and new by_endpoint
+  const endpointsData = usageStats
+    ? 'by_endpoint' in usageStats
+      ? Object.entries(usageStats.by_endpoint).map(([endpoint, count]) => ({
+          endpoint,
+          method: 'N/A',
+          count
+        }))
+      : 'top_endpoints' in usageStats
+      ? usageStats.top_endpoints
+      : []
+    : []
+
+  if (!endpointsData || endpointsData.length === 0) {
     return (
       <div className="flex items-center justify-center h-32 text-gray-400">
         <div className="text-center">
@@ -21,8 +34,10 @@ export default function TopEndpoints({ usageStats }: TopEndpointsProps) {
     )
   }
 
-  // Get top 5 endpoints
-  const topEndpoints = usageStats.top_endpoints.slice(0, 5)
+  // Get top 5 endpoints and sort by count
+  const topEndpoints = endpointsData
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
 
   // Calculate total calls for percentage calculation
   const totalCalls = topEndpoints.reduce((sum, endpoint) => sum + endpoint.count, 0)
