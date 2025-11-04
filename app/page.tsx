@@ -69,50 +69,50 @@ export default function HomePage() {
         {/* High-Quality Background Image */}
         <div className="absolute inset-0 -z-10">
           <Image
-            src="/assets/suede-hero-banner.webp"
+            src="/assets/headrest-hero.webp"
             alt="Headrest background"
             fill
-            className="object-cover object-top"
+            className="object-cover object-center"
             priority
             quality={95}
             sizes="100vw"
           />
           <div className="absolute inset-0">
             <picture>
-              <source srcSet="/assets/suede-hero-banner.webp" type="image/webp" />
+              <source srcSet="/assets/headrest-hero.webp" type="image/webp" />
               <img
-                src="/assets/suede-hero-banner.png"
+                src="/assets/headrest-hero.png"
                 alt="Headrest background"
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover object-center"
               />
             </picture>
           </div>
         </div>
-        
-        {/* Reduced overlay for better background visibility */}
-        <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px]"></div>
+
+        {/* Dark overlay for better text readability on teal background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-headrest-navy/60 via-headrest-navy/40 to-transparent"></div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-suede-text mb-6">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
             Stop fighting with PrestaShop's outdated Webservice
           </h1>
-          <p className="text-xl text-suede-text mb-8 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-white/95 mb-8 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
             Headrest is the modern, lightning-fast, and secure API built specifically to power modern headless commerce storefronts, delivering only the data you need, instantly.
           </p>
-          
+
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link 
+            <Link
               href="/signup"
-              className="bg-suede-primary text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-suede-accent focus:outline-none focus:ring-2 focus:ring-suede-primary focus:ring-offset-2 transition-colors"
+              className="bg-white text-headrest-navy px-8 py-3 rounded-lg text-lg font-semibold hover:bg-headrest-cream focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-headrest-navy transition-colors shadow-xl"
               aria-label="Start your free trial"
             >
               Start Free Trial
             </Link>
-            <Link 
+            <Link
               href="/demo"
-              className="border border-suede-primary text-suede-primary px-8 py-3 rounded-lg text-lg font-semibold hover:bg-suede-background focus:outline-none focus:ring-2 focus:ring-suede-primary focus:ring-offset-2 transition-colors"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-headrest-navy transition-colors"
               aria-label="View product demo"
             >
               View Demo
@@ -120,8 +120,8 @@ export default function HomePage() {
           </div>
 
           {/* Live API Badge */}
-          <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
-            <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+          <div className="inline-flex items-center bg-white/90 backdrop-blur-sm text-headrest-teal-dark px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+            <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
             Live API serving 500+ products across 25+ active stores
           </div>
         </div>

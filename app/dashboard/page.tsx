@@ -6,16 +6,20 @@ import Image from 'next/image'
 import { useAuth } from '@/components/providers/auth-provider'
 import { useAppStore } from '@/lib/store'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { apiClient, type Organization, type ApiKey, type UsageStats, type Credentials } from '@/lib/api'
+import { apiClient, type Organization, type ApiKey, type UsageStats, type Credentials, type UsagePeriod, type DetailedUsageStats } from '@/lib/api'
 import MobileNav from '@/components/ui/mobile-nav'
 import UsageChart from '@/components/ui/usage-chart'
 import TopEndpoints from '@/components/ui/top-endpoints'
+import PeriodSelector from '@/components/ui/period-selector'
+import DateRangePicker from '@/components/ui/date-range-picker'
 
 export default function DashboardPage() {
   const { user, signOut, session } = useAuth()
   const { addNotification } = useAppStore()
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null)
   const [connectionStatuses, setConnectionStatuses] = useState<Record<string, 'connected' | 'disconnected' | 'testing' | 'unknown'>>({})
+  const [selectedPeriod, setSelectedPeriod] = useState<UsagePeriod | 'custom'>('week')
+  const [customDateRange, setCustomDateRange] = useState<{ from: string; to: string } | null>(null)
 
   // Fetch organizations for the current user
   const { data: organizations = [], isLoading: organizationsLoading, error: organizationsError } = useQuery({
@@ -87,12 +91,124 @@ export default function DashboardPage() {
     }
   }, [organizationDetails])
 
-  // Fetch usage stats for current organization
-  const { data: usageStats } = useQuery({
+  // Handler for custom date range changes
+  const handleDateRangeChange = (fromDate: string, toDate: string) => {
+    console.log('Custom date range selected:', { fromDate, toDate })
+    setCustomDateRange({ from: fromDate, to: toDate })
+    setSelectedPeriod('custom')
+  }
+
+  // Handler for period selector changes
+  const handlePeriodChange = (period: UsagePeriod) => {
+    setSelectedPeriod(period)
+    setCustomDateRange(null) // Clear custom range when switching to preset
+  }
+
+  // Fetch detailed usage stats with period selector or custom date range
+  // NOTE: These endpoints are available on staging but not production yet
+  const ENABLE_NEW_USAGE_ENDPOINTS = true // Enabled for staging environment
+
+  const { data: detailedUsageStatsResponse, isLoading: usageStatsLoading, error: usageStatsError } = useQuery({
+    queryKey: ['detailed-usage-stats', selectedOrg?.id, selectedPeriod, customDateRange],
+    queryFn: async () => {
+      console.log('Fetching detailed usage stats:', {
+        orgId: selectedOrg?.id,
+        period: selectedPeriod,
+        customDateRange,
+        hasToken: !!session?.access_token,
+        token: session?.access_token ? `${session.access_token.substring(0, 10)}...` : 'none'
+      })
+
+      try {
+        // Try path parameter version first (more RESTful)
+        if (selectedPeriod === 'custom' && customDateRange) {
+          const result = await apiClient.getOrganizationUsageStats(
+            selectedOrg!.id,
+            session?.access_token,
+            undefined,
+            customDateRange.from,
+            customDateRange.to
+          )
+          console.log('Detailed usage stats response (custom range):', result)
+          return result
+        } else if (selectedPeriod !== 'custom') {
+          const result = await apiClient.getOrganizationUsageStats(
+            selectedOrg!.id,
+            session?.access_token,
+            selectedPeriod as UsagePeriod
+          )
+          console.log('Detailed usage stats response (preset period):', result)
+          return result
+        }
+
+        // Fallback to default period
+        return await apiClient.getOrganizationUsageStats(
+          selectedOrg!.id,
+          session?.access_token,
+          'week'
+        )
+      } catch (error: any) {
+        console.error('Failed to fetch organization usage stats:', error)
+
+        // If path parameter version fails, try query parameter version as fallback
+        console.log('Attempting fallback to query parameter endpoint...')
+        if (selectedPeriod === 'custom' && customDateRange) {
+          return await apiClient.getDetailedUsageStats(
+            selectedOrg!.id,
+            session?.access_token,
+            undefined,
+            customDateRange.from,
+            customDateRange.to
+          )
+        } else if (selectedPeriod !== 'custom') {
+          return await apiClient.getDetailedUsageStats(
+            selectedOrg!.id,
+            session?.access_token,
+            selectedPeriod as UsagePeriod
+          )
+        }
+
+        return await apiClient.getDetailedUsageStats(
+          selectedOrg!.id,
+          session?.access_token,
+          'week'
+        )
+      }
+    },
+    enabled: ENABLE_NEW_USAGE_ENDPOINTS && !!session?.access_token && !!selectedOrg?.id,
+    staleTime: 0, // Always fetch fresh data
+    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
+  })
+
+  // Extract the stats from the response
+  const detailedUsageStats: DetailedUsageStats | undefined = detailedUsageStatsResponse?.stats
+
+  // Debug errors
+  useEffect(() => {
+    if (usageStatsError) {
+      console.error('Usage stats error:', usageStatsError)
+      addNotification({
+        type: 'error',
+        title: 'Usage Stats Error',
+        message: 'Failed to load detailed usage statistics. Using legacy data.'
+      })
+    }
+  }, [usageStatsError, addNotification])
+
+  // Fallback to legacy usage stats if detailed stats fail
+  const { data: legacyUsageStats } = useQuery({
     queryKey: ['usage-stats'],
     queryFn: () => apiClient.getUsageStats(session?.access_token),
-    enabled: !!session?.access_token,
+    enabled: !!session?.access_token && !detailedUsageStats,
   })
+
+  // Use detailed stats if available, otherwise fall back to legacy
+  const usageStats = detailedUsageStats || legacyUsageStats
+
+  // Debug selected period changes
+  useEffect(() => {
+    console.log('Selected period changed to:', selectedPeriod)
+  }, [selectedPeriod])
 
 
   // Fetch decrypted credentials for selected organization
@@ -145,13 +261,30 @@ export default function DashboardPage() {
   // Function to get API calls color based on usage percentage
   const getApiCallsColor = () => {
     if (!usageStats) return 'purple'
-    
-    const usagePercentage = (usageStats.total_calls / usageStats.calls_limit) * 100
-    
-    if (usagePercentage === 0) return 'purple'      // None used
-    if (usagePercentage < 50) return 'green'        // Some used
-    if (usagePercentage < 75) return 'amber'       // More than half
-    return 'red'                                     // 75% or more
+
+    // Check if this is legacy UsageStats with calls_limit
+    if ('calls_limit' in usageStats && usageStats.calls_limit) {
+      const usagePercentage = (usageStats.total_calls / usageStats.calls_limit) * 100
+
+      if (usagePercentage === 0) return 'purple'      // None used
+      if (usagePercentage < 50) return 'green'        // Some used
+      if (usagePercentage < 75) return 'amber'       // More than half
+      return 'red'                                     // 75% or more
+    }
+
+    // For DetailedUsageStats, use success rate instead
+    if ('successful_calls' in usageStats) {
+      const successRate = usageStats.total_calls > 0
+        ? (usageStats.successful_calls / usageStats.total_calls) * 100
+        : 100
+
+      if (successRate >= 99) return 'green'          // Excellent
+      if (successRate >= 95) return 'amber'          // Good
+      if (successRate >= 90) return 'orange'         // Concerning
+      return 'red'                                     // Critical
+    }
+
+    return 'purple'
   }
 
   return (
@@ -365,15 +498,29 @@ export default function DashboardPage() {
                       {/* Usage Trends */}
                       <div className="bg-gray-800/30 border border-gray-700 rounded-lg">
                         <div className="py-5 sm:p-6">
-                          <div className="flex items-center justify-between mb-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                             <h3 className="text-lg leading-6 font-medium text-white">
                               API Usage Trends
                             </h3>
-                            <div className="text-sm text-gray-400">
-                              Last 30 days
-                            </div>
+                            {ENABLE_NEW_USAGE_ENDPOINTS && (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <PeriodSelector
+                                  selectedPeriod={selectedPeriod === 'custom' ? 'week' : selectedPeriod}
+                                  onPeriodChange={handlePeriodChange}
+                                />
+                                <DateRangePicker
+                                  onDateRangeChange={handleDateRangeChange}
+                                />
+                              </div>
+                            )}
                           </div>
-                          <UsageChart usageStats={usageStats || null} />
+                          {usageStatsLoading ? (
+                            <div className="flex items-center justify-center h-64">
+                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-headrest-teal"></div>
+                            </div>
+                          ) : (
+                            <UsageChart usageStats={usageStats || null} />
+                          )}
                         </div>
                       </div>
                     </div>

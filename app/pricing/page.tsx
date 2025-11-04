@@ -99,8 +99,8 @@ export default function PricingPage() {
               <h3 className="text-xl font-bold text-suede-text mb-2">Hobby</h3>
               <div className="text-3xl font-bold text-suede-primary mb-2">
                 {formatPrice(calculatePrice(4.99))}
-                {isAnnual && <span className="text-base text-suede-text">/year</span>}
-                {!isAnnual && <span className="text-base text-suede-text">/mo</span>}
+                {isAnnual && <span className="text-base text-suede-text"></span>}
+                {!isAnnual && <span className="text-base text-suede-text"></span>}
               </div>
               {isAnnual && (
                 <p className="text-sm text-suede-secondary line-through mb-2">$59.88/year</p>
@@ -169,14 +169,14 @@ export default function PricingPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-2">Starter</h3>
               <div className="text-3xl font-bold text-primary-600 mb-2">
                 {formatPrice(calculatePrice(19))}
-                {isAnnual && <span className="text-base text-gray-600">/year</span>}
-                {!isAnnual && <span className="text-base text-gray-600">/mo</span>}
+                {isAnnual && <span className="text-base text-gray-600"></span>}
+                {!isAnnual && <span className="text-base text-gray-600"></span>}
               </div>
               {isAnnual && (
                 <p className="text-sm text-gray-500 line-through mb-2">$228/year</p>
               )}
               {!isAnnual && (
-                <p className="text-sm text-gray-500 line-through mb-4">$29/mo</p>
+                <p className="text-sm text-gray-500 line-through mb-4">$29/month</p>
               )}
               <p className="text-sm text-gray-600">Perfect for small merchants</p>
             </div>
@@ -236,8 +236,8 @@ export default function PricingPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-2">Professional</h3>
               <div className="text-3xl font-bold text-primary-600 mb-2">
                 {formatPrice(calculatePrice(79))}
-                {isAnnual && <span className="text-base text-gray-600">/year</span>}
-                {!isAnnual && <span className="text-base text-gray-600">/mo</span>}
+                {isAnnual && <span className="text-base text-gray-600"></span>}
+                {!isAnnual && <span className="text-base text-gray-600"></span>}
               </div>
               {isAnnual && (
                 <p className="text-sm text-gray-500 line-through mb-2">$948/year</p>
@@ -309,8 +309,8 @@ export default function PricingPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-2">Business</h3>
               <div className="text-3xl font-bold text-primary-600 mb-2">
                 {formatPrice(calculatePrice(149))}
-                {isAnnual && <span className="text-base text-gray-600">/year</span>}
-                {!isAnnual && <span className="text-base text-gray-600">/mo</span>}
+                {isAnnual && <span className="text-base text-gray-600"></span>}
+                {!isAnnual && <span className="text-base text-gray-600"></span>}
               </div>
               {isAnnual && (
                 <p className="text-sm text-gray-500 line-through mb-2">$1,788/year</p>

@@ -64,6 +64,37 @@ export interface UpdatePrestaShopCredentialsData {
   prestashop_url?: string
 }
 
+// Usage period types
+export type UsagePeriod = 'day' | 'week' | 'month'
+
+// New comprehensive usage stats from API
+export interface DetailedUsageStats {
+  total_calls: number
+  successful_calls: number
+  failed_calls: number
+  avg_response_time: number
+  from_date: string
+  to_date: string
+  by_endpoint: Record<string, number>
+  by_method: Record<string, number>
+  by_status: Record<string, number>
+  daily_breakdown: Array<{
+    date: string
+    calls: number
+  }>
+}
+
+export interface UsageStatsResponse {
+  stats: DetailedUsageStats
+  pagination?: {
+    page: number
+    limit: number
+    total: number
+    total_pages: number
+  }
+}
+
+// Legacy usage stats (for backward compatibility)
 export interface UsageStats {
   total_calls: number
   calls_limit: number
@@ -142,7 +173,7 @@ export class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`
-    
+
     const defaultHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
     }
@@ -151,13 +182,20 @@ export class ApiClient {
     if (this.apiKey && !(options.headers as Record<string, string>)?.['Authorization']) {
       defaultHeaders['Authorization'] = `Bearer ${this.apiKey}`
     }
-    
+
     // Merge headers properly
     const finalHeaders = {
       ...defaultHeaders,
       ...(options.headers as Record<string, string>)
     }
 
+    // Debug log for usage stats endpoints
+    if (endpoint.includes('/usage/')) {
+      console.log('API Request Debug:', {
+        endpoint,
+        headers: finalHeaders
+      })
+    }
 
     const response = await fetch(url, {
       ...options,
@@ -166,14 +204,14 @@ export class ApiClient {
 
     if (!response.ok) {
       const errorBody = await response.text()
-      // console.error('API Error:', {
-      //   url,
-      //   status: response.status,
-      //   statusText: response.statusText,
-      //   body: errorBody,
-      //   headers: finalHeaders
-      // })
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
+      console.error('API Error:', {
+        url,
+        status: response.status,
+        statusText: response.statusText,
+        body: errorBody,
+        headers: finalHeaders
+      })
+      throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorBody}`)
     }
 
     // Handle empty responses (204 No Content, or other empty responses)
@@ -412,13 +450,13 @@ export class ApiClient {
     })
   }
 
-  // Get usage statistics for current organization
+  // Get usage statistics for current organization (legacy)
   async getUsageStats(token?: string): Promise<UsageStats> {
     const headers: HeadersInit = {}
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
-    
+
     try {
       return await this.request<UsageStats>('/organizations/me/usage', { headers })
     } catch (error: any) {
@@ -437,6 +475,59 @@ export class ApiClient {
       }
       throw error
     }
+  }
+
+  // Get detailed usage statistics with period or custom date range
+  async getDetailedUsageStats(
+    organizationId: string,
+    token?: string,
+    period?: UsagePeriod,
+    fromDate?: string,
+    toDate?: string
+  ): Promise<UsageStatsResponse> {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
+    const params = new URLSearchParams({
+      organization_id: organizationId,
+    })
+
+    if (period) {
+      params.append('period', period)
+    } else if (fromDate && toDate) {
+      params.append('from_date', fromDate)
+      params.append('to_date', toDate)
+    }
+
+    return this.request<UsageStatsResponse>(`/usage/stats?${params.toString()}`, { headers })
+  }
+
+  // Get usage statistics by organization (path parameter version)
+  async getOrganizationUsageStats(
+    organizationId: string,
+    token?: string,
+    period?: UsagePeriod,
+    fromDate?: string,
+    toDate?: string
+  ): Promise<UsageStatsResponse> {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
+    const params = new URLSearchParams()
+
+    if (period) {
+      params.append('period', period)
+    } else if (fromDate && toDate) {
+      params.append('from_date', fromDate)
+      params.append('to_date', toDate)
+    }
+
+    const query = params.toString() ? `?${params.toString()}` : ''
+    return this.request<UsageStatsResponse>(`/usage/organizations/${organizationId}/stats${query}`, { headers })
   }
 
   // Get decrypted credentials for current organization

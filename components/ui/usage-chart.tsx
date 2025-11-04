@@ -1,14 +1,23 @@
 'use client'
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { UsageStats } from '@/lib/api'
+import { UsageStats, DetailedUsageStats } from '@/lib/api'
 
 interface UsageChartProps {
-  usageStats: UsageStats | null
+  usageStats: UsageStats | DetailedUsageStats | null
 }
 
 export default function UsageChart({ usageStats }: UsageChartProps) {
-  if (!usageStats?.daily_usage || usageStats.daily_usage.length === 0) {
+  // Support both legacy UsageStats and new DetailedUsageStats
+  const dailyData = usageStats
+    ? 'daily_breakdown' in usageStats
+      ? usageStats.daily_breakdown
+      : 'daily_usage' in usageStats
+      ? usageStats.daily_usage
+      : []
+    : []
+
+  if (!dailyData || dailyData.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-400">
         <div className="text-center">
@@ -22,13 +31,13 @@ export default function UsageChart({ usageStats }: UsageChartProps) {
     )
   }
 
-  // Format the data for the chart
-  const chartData = usageStats.daily_usage.map(item => ({
-    date: new Date(item.date).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric' 
+  // Format the data for the chart - support both 'count' and 'calls' properties
+  const chartData = dailyData.map(item => ({
+    date: new Date(item.date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
     }),
-    calls: item.count,
+    calls: 'calls' in item ? item.calls : 'count' in item ? item.count : 0,
     fullDate: item.date
   }))
 
@@ -71,10 +80,10 @@ export default function UsageChart({ usageStats }: UsageChartProps) {
           <Line
             type="monotone"
             dataKey="calls"
-            stroke="#60a5fa"
+            stroke="#5A9B9E"
             strokeWidth={2}
-            dot={{ fill: '#60a5fa', strokeWidth: 2, r: 4 }}
-            activeDot={{ r: 6, stroke: '#60a5fa', strokeWidth: 2 }}
+            dot={{ fill: '#5A9B9E', strokeWidth: 2, r: 4 }}
+            activeDot={{ r: 6, stroke: '#5A9B9E', strokeWidth: 2 }}
           />
         </LineChart>
       </ResponsiveContainer>

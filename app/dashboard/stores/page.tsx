@@ -849,21 +849,21 @@ products = response.json()`}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-400">{usageStats.total_calls.toLocaleString()}</div>
+                            <div className="text-2xl font-bold text-blue-400">{(usageStats?.total_calls || 0).toLocaleString()}</div>
                             <div className="text-sm text-gray-400">API Calls Used</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-2xl font-bold text-green-400">{usageStats.calls_remaining.toLocaleString()}</div>
+                            <div className="text-2xl font-bold text-green-400">{(usageStats?.calls_remaining || 0).toLocaleString()}</div>
                             <div className="text-sm text-gray-400">Remaining</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-2xl font-bold text-purple-400">{usageStats.calls_limit.toLocaleString()}</div>
+                            <div className="text-2xl font-bold text-purple-400">{(usageStats?.calls_limit || 0).toLocaleString()}</div>
                             <div className="text-sm text-gray-400">Total Limit</div>
                           </div>
                         </div>
                         <div className="mt-4 text-center">
                           <div className="text-sm text-gray-400">
-                            Period: {new Date(usageStats.period_start).toLocaleDateString()} - {new Date(usageStats.period_end).toLocaleDateString()}
+                            Period: {usageStats?.period_start ? new Date(usageStats.period_start).toLocaleDateString() : 'N/A'} - {usageStats?.period_end ? new Date(usageStats.period_end).toLocaleDateString() : 'N/A'}
                           </div>
                         </div>
                       </div>
