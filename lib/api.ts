@@ -26,6 +26,9 @@ export interface Organization {
   firebase_service_account?: string  // Encrypted service account JSON
   firebase_web_api_key?: string
   oauth_enabled?: boolean
+  // Stripe billing
+  stripe_customer_id?: string
+  stripe_subscription_id?: string
 }
 
 
@@ -679,6 +682,146 @@ export class ApiClient {
       method: 'DELETE',
       headers
     })
+  }
+
+  // Subscription management endpoints (using new backend API)
+  async getSubscription(token?: string): Promise<{
+    id: string
+    organization_id: string
+    stripe_subscription_id: string
+    plan_tier: string
+    status: string
+    current_period_start: string
+    current_period_end: string
+    cancel_at?: string | null
+    created_at: string
+  } | null> {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    
+    // Use proxy API route - include credentials to send cookies
+    const response = await fetch('/api/subscriptions/me', {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include cookies for authentication
+      cache: 'no-store', // Don't cache this request
+    })
+    
+    if (!response.ok) {
+      // 404 means no subscription found - this is expected and not an error
+      if (response.status === 404) {
+        return null
+      }
+      
+      const error = await response.json().catch(() => ({ error: 'Failed to get subscription' }))
+      throw new Error(error.error || `Failed to get subscription: ${response.status}`)
+    }
+    return response.json()
+  }
+
+  async upgradeSubscription(
+    newPlanTier: string, 
+    billingPeriod: 'monthly' | 'annual' = 'monthly',
+    priceId?: string
+  ): Promise<{
+    success: boolean
+    message: string
+    subscription: any
+    organization: any
+  }> {
+    const response = await fetch('/api/subscriptions/me/upgrade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        new_plan_tier: newPlanTier,
+        billing_period: billingPeriod,
+        ...(priceId && { price_id: priceId })
+      })
+    })
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Failed to upgrade subscription' }))
+      throw new Error(error.error || `Failed to upgrade subscription: ${response.status}`)
+    }
+    return response.json()
+  }
+
+  async downgradeSubscription(
+    newPlanTier: string, 
+    billingPeriod: 'monthly' | 'annual' = 'monthly',
+    priceId?: string
+  ): Promise<{
+    success: boolean
+    message: string
+    subscription: any
+    organization: any
+  }> {
+    const response = await fetch('/api/subscriptions/me/downgrade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        new_plan_tier: newPlanTier,
+        billing_period: billingPeriod,
+        ...(priceId && { price_id: priceId })
+      })
+    })
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Failed to downgrade subscription' }))
+      throw new Error(error.error || `Failed to downgrade subscription: ${response.status}`)
+    }
+    return response.json()
+  }
+
+  async cancelSubscription(cancelImmediately: boolean = false): Promise<{
+    success: boolean
+    message: string
+    subscription: any
+    organization: any
+  }> {
+    const response = await fetch('/api/subscriptions/me/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cancel_immediately: cancelImmediately
+      })
+    })
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Failed to cancel subscription' }))
+      throw new Error(error.error || `Failed to cancel subscription: ${response.status}`)
+    }
+    return response.json()
+  }
+
+  // Legacy Stripe invoice endpoints (keep for now)
+  async getInvoices(customerId: string): Promise<import('../types/index').Invoice[]> {
+    const response = await fetch(`/api/stripe/invoices?customer_id=${customerId}`)
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`Failed to get invoices: ${response.status} - ${error}`)
+    }
+    return response.json()
+  }
+
+  async createPortalSession(customerId: string, returnUrl: string): Promise<{ url: string }> {
+    const response = await fetch('/api/stripe/billing-portal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customerId,
+        returnUrl
+      })
+    })
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`Failed to create portal session: ${response.status} - ${error}`)
+    }
+    return response.json()
   }
 }
 

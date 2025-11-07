@@ -311,6 +311,12 @@ function StoresContent() {
                   API Keys
                 </Link>
                 <Link
+                  href="/dashboard/settings"
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                >
+                  Settings
+                </Link>
+                <Link
                   href="/docs"
                   className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                 >

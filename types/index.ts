@@ -23,7 +23,7 @@ export interface Organization {
   // Billing
   stripe_customer_id?: string
   stripe_subscription_id?: string
-  subscription_status?: 'active' | 'canceled' | 'past_due' | 'trialing'
+  subscription_status?: 'active' | 'canceled' | 'past_due' | 'trialing' | 'unpaid'
 }
 
 export interface User {
@@ -184,4 +184,62 @@ export interface ApiKeyForm {
   name: string
   permissions: ('read' | 'write')[]
   expires_in_days?: number
+}
+
+// Subscription and billing types
+export interface Subscription {
+  id: string
+  status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'unpaid'
+  current_period_start: number
+  current_period_end: number
+  cancel_at_period_end: boolean
+  canceled_at?: number
+  trial_start?: number
+  trial_end?: number
+  plan: {
+    id: string
+    nickname: string
+    amount: number
+    currency: string
+    interval: 'month' | 'year'
+    interval_count: number
+  }
+  items: {
+    id: string
+    price: {
+      id: string
+      nickname: string
+      amount: number
+      currency: string
+      interval: 'month' | 'year'
+    }
+  }[]
+  customer: string
+  metadata?: {
+    planId?: string
+    billingPeriod?: string
+    hasTrial?: string
+  }
+}
+
+export interface Invoice {
+  id: string
+  number: string
+  amount_due: number
+  amount_paid: number
+  currency: string
+  status: 'draft' | 'open' | 'paid' | 'uncollectible' | 'void'
+  created: number
+  due_date?: number
+  paid_at?: number
+  invoice_pdf?: string
+  hosted_invoice_url?: string
+  subscription?: string
+  period_start?: number
+  period_end?: number
+  line_items?: {
+    description: string
+    amount: number
+    currency: string
+  }[]
 }

@@ -62,7 +62,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // Handle auth events
         if (event === 'SIGNED_IN') {
-          router.push('/dashboard')
+          // Only redirect to dashboard if not already on a dashboard page
+          const currentPath = window.location.pathname
+          if (!currentPath.startsWith('/dashboard')) {
+            router.push('/dashboard')
+          }
         } else if (event === 'SIGNED_OUT') {
           router.push('/')
         }
