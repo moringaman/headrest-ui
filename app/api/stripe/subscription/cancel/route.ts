@@ -74,6 +74,8 @@ export async function POST(request: NextRequest) {
       const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
         cancel_at_period_end: true,
       })
+      // Access current_period_end safely (exists at runtime but may not be in type definition)
+      const subscription = updatedSubscription as any
       return NextResponse.json({
         success: true,
         canceled: false,
@@ -82,7 +84,7 @@ export async function POST(request: NextRequest) {
           id: updatedSubscription.id,
           status: updatedSubscription.status,
           cancel_at_period_end: updatedSubscription.cancel_at_period_end,
-          current_period_end: updatedSubscription.current_period_end,
+          current_period_end: subscription.current_period_end,
         }
       })
     }

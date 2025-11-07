@@ -133,12 +133,14 @@ export async function POST(request: NextRequest) {
       )
 
       // If invoice is open and needs payment, redirect to invoice payment page
+      // Cast to any to access payment_intent which exists at runtime when expanded but not in type definition
+      const invoiceAny = invoice as any
       if (invoice.status === 'open' && invoice.amount_due > 0) {
         // Try to pay with default payment method first
-        if (invoice.payment_intent) {
-          const paymentIntent = typeof invoice.payment_intent === 'string'
-            ? await stripe.paymentIntents.retrieve(invoice.payment_intent)
-            : invoice.payment_intent
+        if (invoiceAny.payment_intent) {
+          const paymentIntent = typeof invoiceAny.payment_intent === 'string'
+            ? await stripe.paymentIntents.retrieve(invoiceAny.payment_intent)
+            : invoiceAny.payment_intent
 
           // If payment intent requires action, return the invoice hosted URL
           if (paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_payment_method') {

@@ -66,15 +66,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Format subscription data for frontend
+    // Cast to any to access properties that exist at runtime but may not be in type definition
+    const subscriptionAny = subscription as any
     const subscriptionData = {
       id: subscription.id,
       status: subscription.status,
-      current_period_start: subscription.current_period_start,
-      current_period_end: subscription.current_period_end,
+      current_period_start: subscriptionAny.current_period_start,
+      current_period_end: subscriptionAny.current_period_end,
       cancel_at_period_end: subscription.cancel_at_period_end,
-      canceled_at: subscription.canceled_at || undefined,
-      trial_start: subscription.trial_start || undefined,
-      trial_end: subscription.trial_end || undefined,
+      canceled_at: subscriptionAny.canceled_at || undefined,
+      trial_start: subscriptionAny.trial_start || undefined,
+      trial_end: subscriptionAny.trial_end || undefined,
       plan: {
         id: subscription.items.data[0]?.price.id || '',
         nickname: subscription.items.data[0]?.price.nickname || '',

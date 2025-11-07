@@ -262,10 +262,12 @@ export async function POST(request: NextRequest) {
         console.log('Payment failed:', failedInvoice.id)
         
         // Update subscription status if subscription is attached
-        if (failedInvoice.subscription) {
-          const subscriptionId = typeof failedInvoice.subscription === 'string'
-            ? failedInvoice.subscription
-            : failedInvoice.subscription.id
+        // Cast to any to access subscription property that exists at runtime but not in type definition
+        const failedInvoiceAny = failedInvoice as any
+        if (failedInvoiceAny.subscription) {
+          const subscriptionId = typeof failedInvoiceAny.subscription === 'string'
+            ? failedInvoiceAny.subscription
+            : failedInvoiceAny.subscription.id
           
           await updateOrganizationSubscription(
             subscriptionId,

@@ -67,29 +67,35 @@ export async function GET(request: NextRequest) {
     })
 
     // Format invoices for frontend
-    const invoiceData = invoices.data.map(invoice => ({
-      id: invoice.id,
-      number: invoice.number || '',
-      amount_due: invoice.amount_due,
-      amount_paid: invoice.amount_paid,
-      currency: invoice.currency,
-      status: invoice.status,
-      created: invoice.created,
-      due_date: invoice.due_date || undefined,
-      paid_at: invoice.status_transitions.paid_at || undefined,
-      invoice_pdf: invoice.invoice_pdf || undefined,
-      hosted_invoice_url: invoice.hosted_invoice_url || undefined,
-      subscription: invoice.subscription ? (typeof invoice.subscription === 'string' 
-        ? invoice.subscription 
-        : invoice.subscription.id) : undefined,
-      period_start: invoice.period_start || undefined,
-      period_end: invoice.period_end || undefined,
-      line_items: invoice.lines.data.map(line => ({
-        description: line.description || '',
-        amount: line.amount,
+    const invoiceData = invoices.data.map(invoice => {
+      // Safely access subscription property (may not be in type definition but exists when expanded)
+      const subscription = (invoice as any).subscription
+      const subscriptionId = subscription 
+        ? (typeof subscription === 'string' ? subscription : subscription.id)
+        : undefined
+
+      return {
+        id: invoice.id,
+        number: invoice.number || '',
+        amount_due: invoice.amount_due,
+        amount_paid: invoice.amount_paid,
         currency: invoice.currency,
-      })),
-    }))
+        status: invoice.status,
+        created: invoice.created,
+        due_date: invoice.due_date || undefined,
+        paid_at: invoice.status_transitions.paid_at || undefined,
+        invoice_pdf: invoice.invoice_pdf || undefined,
+        hosted_invoice_url: invoice.hosted_invoice_url || undefined,
+        subscription: subscriptionId,
+        period_start: invoice.period_start || undefined,
+        period_end: invoice.period_end || undefined,
+        line_items: invoice.lines.data.map(line => ({
+          description: line.description || '',
+          amount: line.amount,
+          currency: invoice.currency,
+        })),
+      }
+    })
 
     return NextResponse.json(invoiceData)
   } catch (error: any) {
