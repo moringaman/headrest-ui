@@ -87,6 +87,45 @@ function getApiCallsLimit(planId: string): number {
   return limits[planId as keyof typeof limits] || 1000
 }
 
+// Function to update organization subscription in backend
+async function updateOrganizationSubscription(
+  subscriptionId: string,
+  status: string,
+  planId?: string
+) {
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL
+  
+  if (!backendUrl) {
+    console.error('NEXT_PUBLIC_API_URL environment variable is not set')
+    return
+  }
+  
+  try {
+    // Find organization by subscription ID
+    // Note: This assumes your backend has an endpoint to find organizations by subscription_id
+    // If not, you may need to store this mapping differently
+    const response = await fetch(`${backendUrl}/api/v1/organizations/by-subscription/${subscriptionId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        subscription_status: status,
+        ...(planId && { plan_tier: planId }),
+      }),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Failed to update organization subscription: ${response.status} - ${errorText}`)
+    } else {
+      console.log(`Successfully updated organization subscription: ${subscriptionId} -> ${status}`)
+    }
+  } catch (error) {
+    console.error('Error updating organization subscription:', error)
+  }
+}
+
 // Function to send welcome email
 async function sendWelcomeEmail(email: string, planId: string, isTrial: boolean, password: string) {
   console.log(`Welcome email sent to ${email} for ${planId} plan${isTrial ? ' (trial)' : ''}`)
@@ -178,7 +217,15 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         console.log('Subscription updated:', subscription.id)
         
-        // Handle subscription changes (plan upgrades/downgrades, etc.)
+        // Extract plan ID from metadata
+        const planId = subscription.metadata?.planId || subscription.items.data[0]?.price.metadata?.planId
+        
+        // Update organization subscription status and plan
+        await updateOrganizationSubscription(
+          subscription.id,
+          subscription.status,
+          planId
+        )
         break
 
       case 'customer.subscription.trial_will_end':
@@ -195,8 +242,11 @@ export async function POST(request: NextRequest) {
         const deletedSubscription = event.data.object as Stripe.Subscription
         console.log('Subscription cancelled:', deletedSubscription.id)
         
-        // Handle subscription cancellation
-        // Update user account status, send cancellation email, etc.
+        // Update organization subscription status to canceled
+        await updateOrganizationSubscription(
+          deletedSubscription.id,
+          'canceled'
+        )
         break
 
       case 'invoice.payment_succeeded':
@@ -211,8 +261,19 @@ export async function POST(request: NextRequest) {
         const failedInvoice = event.data.object as Stripe.Invoice
         console.log('Payment failed:', failedInvoice.id)
         
-        // Handle failed payment
-        // Send payment failure email, update account status, etc.
+        // Update subscription status if subscription is attached
+        // Cast to any to access subscription property that exists at runtime but not in type definition
+        const failedInvoiceAny = failedInvoice as any
+        if (failedInvoiceAny.subscription) {
+          const subscriptionId = typeof failedInvoiceAny.subscription === 'string'
+            ? failedInvoiceAny.subscription
+            : failedInvoiceAny.subscription.id
+          
+          await updateOrganizationSubscription(
+            subscriptionId,
+            'past_due'
+          )
+        }
         break
 
       default:

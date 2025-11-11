@@ -323,6 +323,12 @@ export default function DashboardPage() {
                       API Keys
                     </Link>
                     <Link
+                      href="/dashboard/settings"
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                    >
+                      Settings
+                    </Link>
+                    <Link
                       href="/docs"
                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                     >
@@ -632,7 +638,7 @@ export default function DashboardPage() {
                         </p>
                       </div>
                       <Link
-                        href="/pricing"
+                        href="/dashboard/billing"
                         className="bg-suede-primary hover:bg-suede-accent text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                       >
                         Upgrade
