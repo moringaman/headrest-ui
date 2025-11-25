@@ -696,106 +696,107 @@ export class ApiClient {
     cancel_at?: string | null
     created_at: string
   } | null> {
-    const headers: HeadersInit = { 'Content-Type': 'application/json' }
+    const headers: HeadersInit = {}
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
-    
-    // Use proxy API route - include credentials to send cookies
-    const response = await fetch('/api/subscriptions/me', {
-      method: 'GET',
-      headers: { 
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // Include cookies for authentication
-      cache: 'no-store', // Don't cache this request
-    })
-    
-    if (!response.ok) {
+
+    try {
+      return await this.request<{
+        id: string
+        organization_id: string
+        stripe_subscription_id: string
+        plan_tier: string
+        status: string
+        current_period_start: string
+        current_period_end: string
+        cancel_at?: string | null
+        created_at: string
+      }>('/subscriptions/me', { headers })
+    } catch (error: any) {
       // 404 means no subscription found - this is expected and not an error
-      if (response.status === 404) {
+      if (error.message?.includes('404') || error.message?.includes('Not Found')) {
         return null
       }
-      
-      const error = await response.json().catch(() => ({ error: 'Failed to get subscription' }))
-      throw new Error(error.error || `Failed to get subscription: ${response.status}`)
+      throw error
     }
-    return response.json()
   }
 
   async upgradeSubscription(
-    newPlanTier: string, 
+    newPlanTier: string,
     billingPeriod: 'monthly' | 'annual' = 'monthly',
-    priceId?: string
+    priceId?: string,
+    token?: string
   ): Promise<{
     success: boolean
     message: string
     subscription: any
     organization: any
   }> {
-    const response = await fetch('/api/subscriptions/me/upgrade', {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
+    return this.request('/subscriptions/me/upgrade', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         new_plan_tier: newPlanTier,
         billing_period: billingPeriod,
         ...(priceId && { price_id: priceId })
       })
     })
-    
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Failed to upgrade subscription' }))
-      throw new Error(error.error || `Failed to upgrade subscription: ${response.status}`)
-    }
-    return response.json()
   }
 
   async downgradeSubscription(
-    newPlanTier: string, 
+    newPlanTier: string,
     billingPeriod: 'monthly' | 'annual' = 'monthly',
-    priceId?: string
+    priceId?: string,
+    token?: string
   ): Promise<{
     success: boolean
     message: string
     subscription: any
     organization: any
   }> {
-    const response = await fetch('/api/subscriptions/me/downgrade', {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
+    return this.request('/subscriptions/me/downgrade', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         new_plan_tier: newPlanTier,
         billing_period: billingPeriod,
         ...(priceId && { price_id: priceId })
       })
     })
-    
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Failed to downgrade subscription' }))
-      throw new Error(error.error || `Failed to downgrade subscription: ${response.status}`)
-    }
-    return response.json()
   }
 
-  async cancelSubscription(cancelImmediately: boolean = false): Promise<{
+  async cancelSubscription(
+    cancelImmediately: boolean = false,
+    token?: string
+  ): Promise<{
     success: boolean
     message: string
     subscription: any
     organization: any
   }> {
-    const response = await fetch('/api/subscriptions/me/cancel', {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
+    return this.request('/subscriptions/me/cancel', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         cancel_immediately: cancelImmediately
       })
     })
-    
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Failed to cancel subscription' }))
-      throw new Error(error.error || `Failed to cancel subscription: ${response.status}`)
-    }
-    return response.json()
   }
 
   // Legacy Stripe invoice endpoints (keep for now)

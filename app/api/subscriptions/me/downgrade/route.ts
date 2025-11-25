@@ -25,20 +25,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Base64 encode Stripe secret key (server-side only)
-    const stripeSecretKey = process.env.STRIPE_SECRET_KEY
-    if (!stripeSecretKey) {
-      return NextResponse.json(
-        { error: 'Stripe secret key not configured' },
-        { status: 500 }
-      )
-    }
-
-    const encodedStripeKey = Buffer.from(stripeSecretKey).toString('base64')
-
     const requestBody: any = {
       new_plan_tier,
-      stripe_secret_key: encodedStripeKey,
       billing_period,
     }
 

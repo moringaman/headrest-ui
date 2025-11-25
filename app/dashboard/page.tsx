@@ -12,6 +12,7 @@ import UsageChart from '@/components/ui/usage-chart'
 import TopEndpoints from '@/components/ui/top-endpoints'
 import PeriodSelector from '@/components/ui/period-selector'
 import DateRangePicker from '@/components/ui/date-range-picker'
+import { useFeatureFlag } from '@/hooks/use-feature-flag'
 
 export default function DashboardPage() {
   const { user, signOut, session } = useAuth()
@@ -20,6 +21,9 @@ export default function DashboardPage() {
   const [connectionStatuses, setConnectionStatuses] = useState<Record<string, 'connected' | 'disconnected' | 'testing' | 'unknown'>>({})
   const [selectedPeriod, setSelectedPeriod] = useState<UsagePeriod | 'custom'>('week')
   const [customDateRange, setCustomDateRange] = useState<{ from: string; to: string } | null>(null)
+
+  // Feature flags
+  const { value: shoppingFeedsEnabled } = useFeatureFlag('shoppingfeeds', false)
 
   // Fetch organizations for the current user
   const { data: organizations = [], isLoading: organizationsLoading, error: organizationsError } = useQuery({
@@ -346,12 +350,13 @@ export default function DashboardPage() {
                   </div>
               
               {/* Mobile navigation */}
-              <MobileNav 
-                currentPage="dashboard" 
-                user={user} 
+              <MobileNav
+                currentPage="dashboard"
+                user={user}
                 onSignOut={handleSignOut}
                 selectedOrg={selectedOrg}
                 organizations={organizations}
+                shoppingFeedsEnabled={shoppingFeedsEnabled}
               />
             </div>
           </div>
@@ -556,6 +561,17 @@ export default function DashboardPage() {
                     >
                       API Keys
                     </Link>
+                    {shoppingFeedsEnabled && (
+                      <Link
+                        href="/dashboard/feeds"
+                        className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-md text-sm font-medium text-center block flex items-center justify-center space-x-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span>Product Feeds</span>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>
