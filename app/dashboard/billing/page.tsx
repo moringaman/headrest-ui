@@ -110,7 +110,7 @@ function BillingContent() {
   // Upgrade subscription mutation
   const upgradeSubscriptionMutation = useMutation({
     mutationFn: ({ planId, billingPeriod }: { planId: string; billingPeriod: 'monthly' | 'annual' }) =>
-      apiClient.upgradeSubscription(planId, billingPeriod),
+      apiClient.upgradeSubscription(planId, billingPeriod, undefined, session?.access_token),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['subscription'] })
       queryClient.invalidateQueries({ queryKey: ['organizations'] })
@@ -121,6 +121,12 @@ function BillingContent() {
       })
     },
     onError: (error: any) => {
+      console.error('Upgrade subscription error:', error)
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response,
+        stack: error.stack
+      })
       addNotification({
         type: 'error',
         title: 'Upgrade Failed',
@@ -132,7 +138,7 @@ function BillingContent() {
   // Downgrade subscription mutation
   const downgradeSubscriptionMutation = useMutation({
     mutationFn: ({ planId, billingPeriod }: { planId: string; billingPeriod: 'monthly' | 'annual' }) =>
-      apiClient.downgradeSubscription(planId, billingPeriod),
+      apiClient.downgradeSubscription(planId, billingPeriod, undefined, session?.access_token),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['subscription'] })
       queryClient.invalidateQueries({ queryKey: ['organizations'] })
@@ -154,7 +160,7 @@ function BillingContent() {
   // Cancel subscription mutation
   const cancelSubscriptionMutation = useMutation({
     mutationFn: (cancelImmediately: boolean) =>
-      apiClient.cancelSubscription(cancelImmediately),
+      apiClient.cancelSubscription(cancelImmediately, session?.access_token),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['subscription'] })
       queryClient.invalidateQueries({ queryKey: ['organizations'] })
@@ -162,7 +168,7 @@ function BillingContent() {
       addNotification({
         type: 'success',
         title: 'Subscription Canceled',
-        message: data.message || (cancelImmediately 
+        message: data.message || (cancelImmediately
           ? 'Your subscription has been canceled immediately'
           : 'Your subscription will be canceled at the end of the billing period')
       })

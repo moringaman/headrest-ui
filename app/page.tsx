@@ -95,10 +95,10 @@ export default function HomePage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-            Stop fighting with PrestaShop's outdated Webservice
+            Modern APIs & Multi-Channel Product Feeds for PrestaShop
           </h1>
           <p className="text-xl text-white/95 mb-8 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
-            Headrest is the modern, lightning-fast, and secure API built specifically to power modern headless commerce storefronts, delivering only the data you need, instantly.
+            Headrest powers modern headless storefronts and automatically syncs your products to Google Shopping, maximizing your reach across every channel.
           </p>
 
           {/* CTA Buttons */}
@@ -136,7 +136,7 @@ export default function HomePage() {
             <p className="text-xl text-suede-text max-w-3xl mx-auto">Transform your PrestaShop store with modern technology that delivers exceptional performance and developer experience.</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Speed Feature */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-suede-secondary hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="w-16 h-16 bg-gradient-to-br from-suede-primary to-suede-accent rounded-2xl flex items-center justify-center mb-6">
@@ -149,6 +149,21 @@ export default function HomePage() {
               <div className="flex items-center text-suede-primary font-semibold">
                 <span className="text-2xl font-bold mr-2">10x</span>
                 <span>Faster Load Times</span>
+              </div>
+            </div>
+
+            {/* Google Shopping Feature - NEW */}
+            <div className="bg-white p-8 rounded-2xl shadow-lg border border-suede-secondary hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-suede-text mb-4">Google Shopping Integration</h3>
+              <p className="text-suede-text text-lg leading-relaxed mb-4">Automatically sync your products to Google Merchant Center with optimized feeds that maximize your visibility and sales.</p>
+              <div className="flex items-center text-green-600 font-semibold">
+                <span className="text-2xl font-bold mr-2">Auto</span>
+                <span>Product Sync</span>
               </div>
             </div>
 
@@ -201,9 +216,9 @@ export default function HomePage() {
               <ul className="text-left space-y-2 text-sm text-suede-text">
                 <li>✓ 1 PrestaShop store</li>
                 <li>✓ 1,000 API calls/month</li>
-                <li>✓ 1 React template</li>
+                <li>✓ 1 Google Shopping feed</li>
+                <li>✓ Manual sync only</li>
                 <li>✓ Community support</li>
-                <li>✓ SSL included</li>
               </ul>
             </div>
 
@@ -220,9 +235,9 @@ export default function HomePage() {
               <ul className="text-left space-y-2 text-sm text-suede-text">
                 <li>✓ 1 PrestaShop store</li>
                 <li>✓ 10,000 API calls/month</li>
-                <li>✓ 3 React templates</li>
+                <li>✓ 2 Google Shopping feeds</li>
+                <li>✓ Daily auto-sync</li>
                 <li>✓ Email support (48hr)</li>
-                <li>✓ Custom domain</li>
               </ul>
             </div>
 
@@ -236,9 +251,9 @@ export default function HomePage() {
               <ul className="text-left space-y-2 text-sm text-suede-text">
                 <li>✓ 3 PrestaShop stores</li>
                 <li>✓ 100,000 API calls/month</li>
-                <li>✓ 5 premium templates</li>
-                <li>✓ Email support (24hr)</li>
-                <li>✓ Advanced analytics</li>
+                <li>✓ 5 Google Shopping feeds</li>
+                <li>✓ Hourly auto-sync</li>
+                <li>✓ Advanced field mapping</li>
               </ul>
             </div>
 
@@ -252,9 +267,9 @@ export default function HomePage() {
               <ul className="text-left space-y-2 text-sm text-suede-text">
                 <li>✓ 10 PrestaShop stores</li>
                 <li>✓ 500,000 API calls/month</li>
-                <li>✓ Unlimited templates</li>
-                <li>✓ Priority support (4hr)</li>
-                <li>✓ Mobile app builder</li>
+                <li>✓ Unlimited product feeds</li>
+                <li>✓ Real-time sync</li>
+                <li>✓ Multi-channel support</li>
               </ul>
             </div>
           </div>

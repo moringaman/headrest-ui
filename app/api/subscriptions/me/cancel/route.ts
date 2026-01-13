@@ -18,17 +18,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { cancel_immediately = false } = body
 
-    // Base64 encode Stripe secret key (server-side only)
-    const stripeSecretKey = process.env.STRIPE_SECRET_KEY
-    if (!stripeSecretKey) {
-      return NextResponse.json(
-        { error: 'Stripe secret key not configured' },
-        { status: 500 }
-      )
-    }
-
-    const encodedStripeKey = Buffer.from(stripeSecretKey).toString('base64')
-
     const response = await fetch(`${API_BASE_URL}/api/v1/subscriptions/me/cancel`, {
       method: 'POST',
       headers: {
@@ -37,7 +26,6 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         cancel_immediately,
-        stripe_secret_key: encodedStripeKey,
       }),
     })
 

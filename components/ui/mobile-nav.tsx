@@ -11,9 +11,10 @@ interface MobileNavProps {
   onSignOut?: () => void
   selectedOrg?: any
   organizations?: any[]
+  shoppingFeedsEnabled?: boolean
 }
 
-export default function MobileNav({ currentPage, user, onSignOut, selectedOrg, organizations }: MobileNavProps) {
+export default function MobileNav({ currentPage, user, onSignOut, selectedOrg, organizations, shoppingFeedsEnabled = false }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const getNavigationItems = () => {
@@ -122,7 +123,7 @@ export default function MobileNav({ currentPage, user, onSignOut, selectedOrg, o
       ]
     }
     
-    return [
+    const items = [
       {
         name: 'Dashboard',
         href: '/dashboard',
@@ -137,7 +138,19 @@ export default function MobileNav({ currentPage, user, onSignOut, selectedOrg, o
         name: 'API Keys',
         href: '/dashboard/api-keys',
         current: currentPage === 'api-keys'
-      },
+      }
+    ]
+
+    // Add Feeds menu item if feature flag is enabled
+    if (shoppingFeedsEnabled) {
+      items.push({
+        name: 'Product Feeds',
+        href: '/dashboard/feeds',
+        current: currentPage === 'feeds'
+      })
+    }
+
+    items.push(
       {
         name: 'Billing',
         href: '/dashboard/billing',
@@ -153,7 +166,9 @@ export default function MobileNav({ currentPage, user, onSignOut, selectedOrg, o
         href: '/docs',
         current: currentPage === 'docs'
       }
-    ]
+    )
+
+    return items
   }
 
   const navigationItems = getNavigationItems()

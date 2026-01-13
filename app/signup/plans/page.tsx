@@ -102,24 +102,22 @@ export default function PlanSelectionPage() {
   const handlePlanSelect = async (plan: typeof plans[0]) => {
     setLoadingPlan(plan.id)
     try {
-      const priceId = isAnnual ? plan.stripePriceId.annual : plan.stripePriceId.monthly
-      
+      const billingPeriod = isAnnual ? 'annual' : 'monthly'
+
       console.log('Creating checkout session with:', {
-        priceId,
         planId: plan.id,
-        billingPeriod: isAnnual ? 'annual' : 'monthly',
+        billingPeriod,
         isAnnual
       })
-      
+
       const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          priceId: priceId,
           planId: plan.id,
-          billingPeriod: isAnnual ? 'annual' : 'monthly',
+          billingPeriod,
           successUrl: `${window.location.origin}/signup/account-creation?plan=${plan.id}`,
           cancelUrl: `${window.location.origin}/signup/plans`,
         }),

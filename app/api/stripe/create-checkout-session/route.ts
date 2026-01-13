@@ -1,113 +1,82 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-})
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://prestashop-api-staging.up.railway.app'
 
 export async function POST(request: NextRequest) {
   console.log('=== CHECKOUT SESSION REQUEST START ===')
-  
-  let priceId, planId, billingPeriod, successUrl, cancelUrl
-  
+
   try {
     const body = await request.json()
     console.log('Request body received:', body)
-    
-    priceId = body.priceId
-    planId = body.planId
-    billingPeriod = body.billingPeriod
-    successUrl = body.successUrl
-    cancelUrl = body.cancelUrl
+
+    const { planId, billingPeriod, successUrl, cancelUrl } = body
 
     // Debug logging
     console.log('Checkout session request:', {
-      priceId,
       planId,
       billingPeriod,
       successUrl,
       cancelUrl
     })
 
-    if (!priceId) {
-      console.error('Missing priceId in request')
-      return NextResponse.json({ 
-        error: 'Price ID is required',
-        details: 'No priceId provided in request body'
+    if (!planId || !billingPeriod) {
+      console.error('Missing required fields in request')
+      return NextResponse.json({
+        error: 'Missing required fields',
+        details: 'planId and billingPeriod are required'
       }, { status: 400 })
     }
 
-    // Validate Stripe configuration
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('STRIPE_SECRET_KEY not configured')
-      return NextResponse.json({ 
-        error: 'Stripe configuration error',
-        details: 'STRIPE_SECRET_KEY environment variable not set'
-      }, { status: 500 })
-    }
-
-    // Calculate trial end date
-    const getTrialEnd = () => {
-      const now = Math.floor(Date.now() / 1000)
-      const trialDays = 28 // 28 days trial period
-      return now + (trialDays * 24 * 60 * 60)
-    }
-
-    // Determine if this plan should have a trial period
-    const hasTrial = planId === 'hobby' && billingPeriod === 'monthly'
-
-        // Create checkout session
-        console.log('Creating checkout session with success_url:', `${successUrl}&session_id={CHECKOUT_SESSION_ID}&trial=${hasTrial}`)
-        const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      success_url: `${successUrl}&session_id={CHECKOUT_SESSION_ID}&trial=${hasTrial}`,
-      cancel_url: cancelUrl,
-      metadata: {
-        planId,
-        billingPeriod,
-        hasTrial: hasTrial.toString(),
+    // Call backend API to create checkout session
+    const response = await fetch(`${API_BASE_URL}/api/v1/subscriptions/create-checkout-session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      subscription_data: {
-        metadata: {
-          planId,
-          billingPeriod,
-          hasTrial: hasTrial.toString(),
-        },
-        // Add trial period for Hobby monthly plan
-        ...(hasTrial && { trial_end: getTrialEnd() }),
-      },
-      // Collect billing address
-      billing_address_collection: 'required',
-      // Allow promotion codes
-      allow_promotion_codes: true,
+      body: JSON.stringify({
+        plan_tier: planId,
+        billing_period: billingPeriod,
+        success_url: successUrl,
+        cancel_url: cancelUrl
+      })
     })
 
-    console.log('Checkout session created successfully:', session.id)
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to create checkout session' }))
+      console.error('Backend API error:', error)
+      return NextResponse.json(
+        {
+          error: 'Failed to create checkout session',
+          details: error.message || error.error || 'Unknown error'
+        },
+        { status: response.status }
+      )
+    }
+
+    const data = await response.json()
+    console.log('Checkout session created successfully:', data.session_id)
     console.log('=== CHECKOUT SESSION REQUEST SUCCESS ===')
-    return NextResponse.json({ url: session.url })
+
+    // Return both url and session_id for compatibility
+    return NextResponse.json({
+      url: data.checkout_url,
+      session_id: data.session_id
+    })
   } catch (error) {
     console.error('=== CHECKOUT SESSION REQUEST ERROR ===')
     console.error('Error creating checkout session:', error)
-    
+
     // More detailed error logging
     if (error instanceof Error) {
       console.error('Error message:', error.message)
       console.error('Error stack:', error.stack)
     }
-    
+
     console.log('=== CHECKOUT SESSION REQUEST END ===')
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to create checkout session',
-        details: error instanceof Error ? error.message : 'Unknown error',
-        priceId: priceId || 'undefined'
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     )
