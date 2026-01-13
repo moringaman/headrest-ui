@@ -1,19 +1,56 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/components/providers/auth-provider'
+import { useQuery } from '@tanstack/react-query'
+import { apiClient, type Organization } from '@/lib/api'
 import FeedList from '@/components/feeds/FeedList'
+import FeedUrlDisplay from '@/components/feeds/FeedUrlDisplay'
+import ValidationErrors from '@/components/feeds/ValidationErrors'
 import ComingSoonBadge from '@/components/feeds/ComingSoonBadge'
 import { GoogleShoppingFeed } from '@/types/feeds'
 import { useFeatureFlag } from '@/hooks/use-feature-flag'
 
 export default function FeedsPage() {
-  // Mock empty state - will be replaced with real data from API
-  const [feeds, setFeeds] = useState<GoogleShoppingFeed[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const { user, session } = useAuth()
+  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null)
 
   // Feature flags
   const { value: googleShoppingFeedEnabled } = useFeatureFlag('google_shopping_feed', false)
+
+  // Fetch feeds from API
+  const { data: feedsData, isLoading: feedsLoading, refetch: refetchFeeds } = useQuery({
+    queryKey: ['feeds', selectedOrg?.id],
+    queryFn: () => apiClient.getFeeds(session?.access_token, { page: 1, limit: 50 }),
+    enabled: !!selectedOrg?.id && !!session?.access_token && googleShoppingFeedEnabled,
+    retry: 1,
+  })
+
+  const feeds = (feedsData as any)?.feeds || []
+  const totalFeeds = (feedsData as any)?.pagination?.total || feeds.length || 0
+
+  // Fetch organizations for the current user
+  const { data: organizations = [] } = useQuery({
+    queryKey: ['organizations', user?.id],
+    queryFn: () => apiClient.getOrganizations(session?.access_token),
+    enabled: !!user?.id && !!session?.access_token,
+  })
+
+  // Auto-select the first organization if none is selected
+  useEffect(() => {
+    if (organizations && organizations.length > 0 && !selectedOrg) {
+      setSelectedOrg(organizations[0])
+    }
+  }, [organizations, selectedOrg])
+
+  // Fetch Google Shopping feed statistics
+  const { data: feedStats, isLoading: statsLoading } = useQuery({
+    queryKey: ['google-shopping-stats', selectedOrg?.id],
+    queryFn: () => apiClient.getGoogleShoppingFeedStats(selectedOrg!.id, 1, session?.access_token),
+    enabled: !!selectedOrg?.id && !!session?.access_token && googleShoppingFeedEnabled,
+    retry: 1,
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,65 +91,6 @@ export default function FeedsPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Total Feeds</p>
-                <p className="text-3xl font-bold text-gray-900">0</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Active Syncs</p>
-                <p className="text-3xl font-bold text-gray-900">0</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Total Products</p>
-                <p className="text-3xl font-bold text-gray-900">0</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Last Sync</p>
-                <p className="text-lg font-semibold text-gray-500">Never</p>
-              </div>
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Feed Types Tabs */}
         <div className="bg-white rounded-lg border border-gray-200 mb-6">
           <div className="border-b border-gray-200">
@@ -126,7 +104,9 @@ export default function FeedsPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     Google Shopping
-                    <span className="ml-2 bg-suede-primary text-white text-xs px-2 py-0.5 rounded-full">0</span>
+                    <span className="ml-2 bg-suede-primary text-white text-xs px-2 py-0.5 rounded-full">
+                      {totalFeeds}
+                    </span>
                   </div>
                 </button>
               ) : (
@@ -157,10 +137,112 @@ export default function FeedsPage() {
               </button>
             </nav>
           </div>
-        </div>
 
-        {/* Feeds List */}
-        <FeedList feeds={feeds} isLoading={isLoading} />
+          {/* Google Shopping Tab Content */}
+          {googleShoppingFeedEnabled && (
+            <div className="p-6">
+              {/* Google Shopping Stats Cards */}
+              <div className="grid md:grid-cols-4 gap-6 mb-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Total Products</p>
+                      {statsLoading ? (
+                        <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div>
+                      ) : (
+                        <p className="text-3xl font-bold text-gray-900">
+                          {feedStats?.totalProducts?.toLocaleString() || '0'}
+                        </p>
+                      )}
+                    </div>
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Valid Products</p>
+                      {statsLoading ? (
+                        <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div>
+                      ) : (
+                        <p className="text-3xl font-bold text-green-600">
+                          {feedStats?.validProducts?.toLocaleString() || '0'}
+                        </p>
+                      )}
+                    </div>
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">In Stock</p>
+                      {statsLoading ? (
+                        <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div>
+                      ) : (
+                        <p className="text-3xl font-bold text-gray-900">
+                          {feedStats?.productsInStock?.toLocaleString() || '0'}
+                        </p>
+                      )}
+                    </div>
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">With GTIN</p>
+                      {statsLoading ? (
+                        <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div>
+                      ) : (
+                        <p className="text-3xl font-bold text-gray-900">
+                          {feedStats?.productsWithGTIN?.toLocaleString() || '0'}
+                        </p>
+                      )}
+                    </div>
+                    <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feed URL Display */}
+              {selectedOrg && (
+                <div className="mb-6">
+                  <FeedUrlDisplay organizationId={selectedOrg.id} feedStats={feedStats} />
+                </div>
+              )}
+
+              {/* Validation Errors */}
+              {feedStats && feedStats.errors && feedStats.errors.length > 0 && (
+                <div className="mb-6">
+                  <ValidationErrors stats={feedStats} />
+                </div>
+              )}
+
+              {/* Feeds List */}
+              <FeedList feeds={feeds} isLoading={feedsLoading} onRefetch={refetchFeeds} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

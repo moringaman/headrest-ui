@@ -2,10 +2,19 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/components/providers/auth-provider'
+import { useMutation } from '@tanstack/react-query'
+import { apiClient } from '@/lib/api'
+import { useAppStore } from '@/lib/store'
 import ComingSoonBadge from '@/components/feeds/ComingSoonBadge'
 import FeedMappingPreview from '@/components/feeds/FeedMappingPreview'
+import type { CreateGoogleShoppingFeedData } from '@/types/feeds'
 
 export default function NewGoogleShoppingFeedPage() {
+  const router = useRouter()
+  const { session } = useAuth()
+  const { addNotification } = useAppStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     name: '',
@@ -13,7 +22,7 @@ export default function NewGoogleShoppingFeedPage() {
     target_country: 'US',
     target_language: 'en',
     currency: 'USD',
-    sync_frequency: 'daily',
+    sync_frequency: 'daily' as 'hourly' | 'daily' | 'weekly' | 'manual',
     only_in_stock: true,
     include_categories: [] as number[],
     min_price: '',
@@ -27,8 +36,82 @@ export default function NewGoogleShoppingFeedPage() {
     { number: 4, name: 'Sync Settings', description: 'Configure sync frequency' }
   ]
 
+  // Create feed mutation
+  const createFeedMutation = useMutation({
+    mutationFn: (data: CreateGoogleShoppingFeedData) =>
+      apiClient.createFeed(data, session?.access_token),
+    onSuccess: () => {
+      addNotification({
+        type: 'success',
+        message: 'Google Shopping feed created successfully!',
+        duration: 5000
+      })
+      router.push('/dashboard/feeds')
+    },
+    onError: (error: any) => {
+      addNotification({
+        type: 'error',
+        message: error.message || 'Failed to create feed. Please try again.',
+        duration: 5000
+      })
+    }
+  })
+
   const handleSubmit = () => {
-    alert('Feed creation will be available soon! The backend API is currently in development. Your configuration will be saved once the API is ready.')
+    // Validate required fields
+    if (!formData.name.trim()) {
+      addNotification({
+        type: 'error',
+        message: 'Please enter a feed name',
+        duration: 3000
+      })
+      setCurrentStep(1)
+      return
+    }
+
+    // Prepare feed data with default field mappings
+    const feedData: CreateGoogleShoppingFeedData = {
+      name: formData.name,
+      description: formData.description || undefined,
+      target_country: formData.target_country,
+      target_language: formData.target_language,
+      currency: formData.currency,
+      sync_frequency: formData.sync_frequency,
+      only_in_stock: formData.only_in_stock,
+      include_categories: formData.include_categories.length > 0 ? formData.include_categories : undefined,
+      min_price: formData.min_price ? parseFloat(formData.min_price) : undefined,
+      max_price: formData.max_price ? parseFloat(formData.max_price) : undefined,
+      field_mappings: {
+        title: {
+          source: 'product_name',
+          max_length: 150
+        },
+        description: {
+          source: 'description',
+          max_length: 5000
+        },
+        image_link: {
+          source: 'cover_image',
+          size: 'large'
+        },
+        condition: 'new',
+        brand: {
+          source: 'manufacturer'
+        },
+        gtin: {
+          source: 'ean13'
+        },
+        availability: {
+          in_stock_value: 'in stock',
+          out_of_stock_value: 'out of stock'
+        },
+        price: {
+          include_tax: true
+        }
+      }
+    }
+
+    createFeedMutation.mutate(feedData)
   }
 
   return (
@@ -343,12 +426,24 @@ export default function NewGoogleShoppingFeedPage() {
           ) : (
             <button
               onClick={handleSubmit}
-              className="px-6 py-2.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center"
+              disabled={createFeedMutation.isPending}
+              className="px-6 py-2.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Create Feed
+              {createFeedMutation.isPending ? (
+                <>
+                  <svg className="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Creating Feed...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Create Feed
+                </>
+              )}
             </button>
           )}
         </div>

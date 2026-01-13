@@ -114,6 +114,22 @@ export interface GoogleShoppingFeedLog {
   created_at: string
 }
 
+export interface GoogleShoppingFeedStats {
+  totalProducts: number
+  validProducts: number
+  invalidProducts: number
+  productsWithGTIN: number
+  productsWithBrand: number
+  productsWithMPN: number
+  productsInStock: number
+  productsOutOfStock: number
+  feedUrl: string
+  errors: Array<{
+    productId: number
+    errors: string[]
+  }>
+}
+
 export const PLAN_FEED_LIMITS = {
   hobby: {
     max_feeds: 1,

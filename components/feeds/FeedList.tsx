@@ -7,9 +7,10 @@ import ComingSoonBadge from './ComingSoonBadge'
 interface FeedListProps {
   feeds: GoogleShoppingFeed[]
   isLoading?: boolean
+  onRefetch?: () => void
 }
 
-export default function FeedList({ feeds, isLoading = false }: FeedListProps) {
+export default function FeedList({ feeds, isLoading = false, onRefetch }: FeedListProps) {
   if (isLoading) {
     return (
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -91,7 +92,7 @@ export default function FeedList({ feeds, isLoading = false }: FeedListProps) {
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {feeds.map((feed) => (
-        <FeedCard key={feed.id} feed={feed} isMock />
+        <FeedCard key={feed.id} feed={feed} onRefetch={onRefetch} />
       ))}
     </div>
   )

@@ -1,4 +1,5 @@
 import type { Cart, CartItem } from '../types'
+import type { GoogleShoppingFeedStats } from '../types/feeds'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1` : 'http://localhost:3000/api/v1'
 
@@ -823,6 +824,356 @@ export class ApiClient {
       throw new Error(`Failed to create portal session: ${response.status} - ${error}`)
     }
     return response.json()
+  }
+
+  // Google Shopping Feed Methods
+
+  /**
+   * Get Google Shopping feed statistics
+   * Requires authentication (JWT or API key)
+   */
+  async getGoogleShoppingFeedStats(
+    organizationId: string,
+    lang: number = 1,
+    token?: string
+  ): Promise<GoogleShoppingFeedStats> {
+    const headers: Record<string, string> = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request<GoogleShoppingFeedStats>(
+      `/google-shopping/stats/${organizationId}?lang=${lang}`,
+      { headers }
+    )
+  }
+
+  /**
+   * Generate Google Shopping feed URL
+   * This is a public endpoint (no authentication required)
+   */
+  getGoogleShoppingFeedUrl(
+    organizationId: string,
+    format: 'xml' | 'txt' = 'xml',
+    lang: number = 1
+  ): string {
+    return `${this.baseURL}/google-shopping/feed/${organizationId}?format=${format}&lang=${lang}`
+  }
+
+  // ==================== GOOGLE SHOPPING FEED MANAGEMENT ====================
+
+  /**
+   * Get all feeds for the authenticated user's organization
+   */
+  async getFeeds(token?: string, params?: {
+    page?: number
+    limit?: number
+    is_active?: boolean
+  }) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
+    const queryParams = new URLSearchParams()
+    if (params?.page) queryParams.append('page', params.page.toString())
+    if (params?.limit) queryParams.append('limit', params.limit.toString())
+    if (params?.is_active !== undefined) queryParams.append('is_active', params.is_active.toString())
+
+    const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
+    return this.request(`/google-shopping/feeds${query}`, { headers })
+  }
+
+  /**
+   * Get a specific feed by ID
+   */
+  async getFeed(feedId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}`, { headers })
+  }
+
+  /**
+   * Create a new Google Shopping feed
+   */
+  async createFeed(data: any, token?: string) {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data)
+    })
+  }
+
+  /**
+   * Update an existing feed
+   */
+  async updateFeed(feedId: string, data: any, token?: string) {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(data)
+    })
+  }
+
+  /**
+   * Delete a feed
+   */
+  async deleteFeed(feedId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}`, {
+      method: 'DELETE',
+      headers
+    })
+  }
+
+  // ==================== FEED SYNC OPERATIONS ====================
+
+  /**
+   * Manually trigger a feed sync
+   */
+  async syncFeed(feedId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}/sync`, {
+      method: 'POST',
+      headers
+    })
+  }
+
+  /**
+   * Get current sync status
+   */
+  async getFeedSyncStatus(feedId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}/sync/status`, { headers })
+  }
+
+  /**
+   * Pause automatic syncing
+   */
+  async pauseFeed(feedId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}/pause`, {
+      method: 'POST',
+      headers
+    })
+  }
+
+  /**
+   * Resume automatic syncing
+   */
+  async resumeFeed(feedId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}/resume`, {
+      method: 'POST',
+      headers
+    })
+  }
+
+  // ==================== FEED STATISTICS & LOGS ====================
+
+  /**
+   * Get feed statistics
+   */
+  async getFeedStats(feedId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}/stats`, { headers })
+  }
+
+  /**
+   * Get sync history logs
+   */
+  async getFeedLogs(feedId: string, token?: string, params?: {
+    page?: number
+    limit?: number
+  }) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
+    const queryParams = new URLSearchParams()
+    if (params?.page) queryParams.append('page', params.page.toString())
+    if (params?.limit) queryParams.append('limit', params.limit.toString())
+
+    const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
+    return this.request(`/google-shopping/feeds/${feedId}/logs${query}`, { headers })
+  }
+
+  /**
+   * Get detailed log for a specific sync
+   */
+  async getFeedLog(feedId: string, logId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}/logs/${logId}`, { headers })
+  }
+
+  // ==================== FEED URLs & PREVIEW ====================
+
+  /**
+   * Get the public feed URL
+   */
+  async getFeedUrl(feedId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}/url`, { headers })
+  }
+
+  /**
+   * Preview feed output (first N products)
+   */
+  async previewFeed(feedId: string, token?: string, limit: number = 10) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/google-shopping/feeds/${feedId}/preview?limit=${limit}`, { headers })
+  }
+
+  // ==================== FIELD MAPPINGS ====================
+
+  /**
+   * Get available PrestaShop fields for mapping
+   */
+  async getPrestaShopFields(token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/feeds/prestashop-fields`, { headers })
+  }
+
+  /**
+   * Get Google Shopping required fields
+   */
+  async getGoogleRequiredFields(token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/feeds/google-required-fields`, { headers })
+  }
+
+  /**
+   * Update field mappings for a feed
+   */
+  async updateFeedMappings(feedId: string, mappings: any, token?: string, validateOnly: boolean = false) {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/feeds/${feedId}/mappings`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ field_mappings: mappings, validate_only: validateOnly })
+    })
+  }
+
+  /**
+   * Test field mapping with specific products
+   */
+  async testFeedMappings(feedId: string, mappings: any, productIds: number[] | undefined, token?: string) {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/feeds/${feedId}/mappings/test`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ field_mappings: mappings, product_ids: productIds })
+    })
+  }
+
+  /**
+   * Get smart mapping suggestions
+   */
+  async getFeedMappingSuggestions(feedId: string, targetCountry: string, categories: number[] | undefined, token?: string) {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/feeds/${feedId}/mappings/suggest`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ target_country: targetCountry, product_categories: categories })
+    })
+  }
+
+  /**
+   * Get mapping analytics
+   */
+  async getFeedMappingAnalytics(feedId: string, token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/feeds/${feedId}/mappings/analytics`, { headers })
+  }
+
+  // ==================== HELPER ENDPOINTS ====================
+
+  /**
+   * Get available PrestaShop categories for filtering
+   */
+  async getFeedCategories(token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/feeds/categories`, { headers })
+  }
+
+  /**
+   * Get available manufacturers/brands
+   */
+  async getFeedManufacturers(token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/feeds/manufacturers`, { headers })
+  }
+
+  /**
+   * Get Google Product Category taxonomy
+   */
+  async getGoogleCategories(token?: string) {
+    const headers: HeadersInit = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return this.request(`/feeds/google-categories`, { headers })
   }
 }
 
