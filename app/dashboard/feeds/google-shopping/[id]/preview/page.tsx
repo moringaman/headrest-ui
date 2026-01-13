@@ -11,20 +11,22 @@ export default function FeedPreviewPage({ params }: { params: Promise<{ id: stri
   const { session } = useAuth()
 
   // Fetch feed details
-  const { data: feed, isLoading: feedLoading } = useQuery({
+  const { data: feedData, isLoading: feedLoading } = useQuery({
     queryKey: ['feed', id],
     queryFn: () => apiClient.getFeed(id, session?.access_token),
     enabled: !!id && !!session?.access_token,
   })
+  const feed = feedData as any
 
   // Fetch feed preview
-  const { data: previewData, isLoading: previewLoading } = useQuery({
+  const { data: previewDataRaw, isLoading: previewLoading } = useQuery({
     queryKey: ['feed-preview', id],
     queryFn: () => apiClient.previewFeed(id, session?.access_token, 20),
     enabled: !!id && !!session?.access_token,
   })
+  const previewData = previewDataRaw as any
 
-  const products = (previewData as any)?.products || []
+  const products = previewData?.products || []
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -44,21 +46,21 @@ export default function FeedPreviewPage({ params }: { params: Promise<{ id: stri
           <h1 className="text-3xl font-bold text-gray-900">Feed Preview</h1>
           {feed && (
             <p className="mt-2 text-gray-600">
-              {(feed as any).name} - Showing first {products.length} products
+              {feed.name} - Showing first {products.length} products
             </p>
           )}
         </div>
 
         {/* Loading State */}
-        {(feedLoading || previewLoading) && (
+        {(feedLoading || previewLoading) ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <div className="animate-spin h-12 w-12 border-4 border-suede-primary border-t-transparent rounded-full mx-auto mb-4"></div>
             <p className="text-gray-600">Loading preview...</p>
           </div>
-        )}
+        ) : null}
 
         {/* Products Preview */}
-        {!previewLoading && products.length > 0 && (
+        {!previewLoading && products.length > 0 ? (
           <div className="space-y-4">
             {products.map((product: any, index: number) => (
               <div key={index} className="bg-white rounded-lg border border-gray-200 p-6">
@@ -150,10 +152,10 @@ export default function FeedPreviewPage({ params }: { params: Promise<{ id: stri
               </div>
             ))}
           </div>
-        )}
+        ) : null}
 
         {/* Empty State */}
-        {!previewLoading && products.length === 0 && (
+        {!previewLoading && products.length === 0 ? (
           <div className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
             <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
@@ -163,7 +165,7 @@ export default function FeedPreviewPage({ params }: { params: Promise<{ id: stri
               This feed doesn't have any products yet. Try syncing the feed first.
             </p>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   )

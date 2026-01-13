@@ -43,16 +43,16 @@ export default function NewGoogleShoppingFeedPage() {
     onSuccess: () => {
       addNotification({
         type: 'success',
-        message: 'Google Shopping feed created successfully!',
-        duration: 5000
+        title: 'Success',
+        message: 'Google Shopping feed created successfully!'
       })
       router.push('/dashboard/feeds')
     },
     onError: (error: any) => {
       addNotification({
         type: 'error',
-        message: error.message || 'Failed to create feed. Please try again.',
-        duration: 5000
+        title: 'Error',
+        message: error.message || 'Failed to create feed. Please try again.'
       })
     }
   })
@@ -62,8 +62,8 @@ export default function NewGoogleShoppingFeedPage() {
     if (!formData.name.trim()) {
       addNotification({
         type: 'error',
-        message: 'Please enter a feed name',
-        duration: 3000
+        title: 'Validation Error',
+        message: 'Please enter a feed name'
       })
       setCurrentStep(1)
       return
@@ -376,7 +376,7 @@ export default function NewGoogleShoppingFeedPage() {
                         name="sync_frequency"
                         type="radio"
                         checked={formData.sync_frequency === option.value}
-                        onChange={(e) => setFormData({ ...formData, sync_frequency: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, sync_frequency: e.target.value as 'manual' | 'daily' | 'hourly' | 'weekly' })}
                         disabled={option.value === 'hourly' || option.value === 'realtime'}
                         className="h-4 w-4 text-suede-primary focus:ring-suede-primary border-gray-300 mt-1"
                       />

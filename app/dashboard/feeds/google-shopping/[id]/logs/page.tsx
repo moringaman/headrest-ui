@@ -13,27 +13,30 @@ export default function FeedLogsPage({ params }: { params: Promise<{ id: string 
   const [selectedLog, setSelectedLog] = useState<string | null>(null)
 
   // Fetch feed details
-  const { data: feed } = useQuery({
+  const { data: feedData } = useQuery({
     queryKey: ['feed', id],
     queryFn: () => apiClient.getFeed(id, session?.access_token),
     enabled: !!id && !!session?.access_token,
   })
+  const feed = feedData as any
 
   // Fetch feed logs
-  const { data: logsData, isLoading: logsLoading } = useQuery({
+  const { data: logsDataRaw, isLoading: logsLoading } = useQuery({
     queryKey: ['feed-logs', id],
     queryFn: () => apiClient.getFeedLogs(id, session?.access_token, { page: 1, limit: 50 }),
     enabled: !!id && !!session?.access_token,
   })
+  const logsData = logsDataRaw as any
 
   // Fetch detailed log if one is selected
-  const { data: logDetail } = useQuery({
+  const { data: logDetailRaw } = useQuery({
     queryKey: ['feed-log-detail', id, selectedLog],
     queryFn: () => apiClient.getFeedLog(id, selectedLog!, session?.access_token),
     enabled: !!id && !!selectedLog && !!session?.access_token,
   })
+  const logDetail = logDetailRaw as any
 
-  const logs = ((logsData as any)?.logs as GoogleShoppingFeedLog[]) || []
+  const logs = (logsData?.logs as GoogleShoppingFeedLog[]) || []
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -85,21 +88,19 @@ export default function FeedLogsPage({ params }: { params: Promise<{ id: string 
           </Link>
 
           <h1 className="text-3xl font-bold text-gray-900">Sync History</h1>
-          {feed && (
-            <p className="mt-2 text-gray-600">{(feed as any).name}</p>
-          )}
+          {feed && <p className="mt-2 text-gray-600">{feed.name}</p>}
         </div>
 
         {/* Loading State */}
-        {logsLoading && (
+        {logsLoading ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <div className="animate-spin h-12 w-12 border-4 border-suede-primary border-t-transparent rounded-full mx-auto mb-4"></div>
             <p className="text-gray-600">Loading sync history...</p>
           </div>
-        )}
+        ) : null}
 
         {/* Logs List */}
-        {!logsLoading && logs.length > 0 && (
+        {!logsLoading && logs.length > 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -187,10 +188,10 @@ export default function FeedLogsPage({ params }: { params: Promise<{ id: string 
               </table>
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Empty State */}
-        {!logsLoading && logs.length === 0 && (
+        {!logsLoading && logs.length === 0 ? (
           <div className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
             <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -200,10 +201,10 @@ export default function FeedLogsPage({ params }: { params: Promise<{ id: string 
               This feed hasn't been synced yet. Sync it to see the history here.
             </p>
           </div>
-        )}
+        ) : null}
 
         {/* Log Detail Modal */}
-        {selectedLog && logDetail && (
+        {selectedLog && logDetail ? (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
               <div className="p-6 border-b border-gray-200 sticky top-0 bg-white">
@@ -290,7 +291,7 @@ export default function FeedLogsPage({ params }: { params: Promise<{ id: string 
               </div>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   )
